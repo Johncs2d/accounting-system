@@ -1,0 +1,214 @@
+{% extends "massage/includes.html" %}
+{% block title %}
+INFO
+{% endblock %}
+{% block pagetitle %}
+Tranquil Touch Massage
+{% endblock %}
+{% block pagetitlesubheading %}
+The Companys Information
+{% endblock %}
+{% block reportsbtn %}
+{% endblock %}
+{% block body %}
+<ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
+    <li class="nav-item">
+        <a role="tab" class="nav-link active" id="tab-0" data-toggle="tab" href="#tab-content-0">
+            <span>Company Info</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" href="#tab-content-1">
+            <span>Edit Company Info</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" href="#tab-content-2">
+            <span>More</span>
+        </a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
+        <div class="main-card mb-3 card">
+            <div class="card-body">
+                <h1 class="card-title">The {Tranquil Touch Massage}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
+        <div class="main-card mb-3 card">
+            <div class="card-body">
+                <h5 class="card-title">Enter Company Information</h5>
+                <form class="needs-validation" novalidate>
+                    <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom01">Company Name</label>
+                            <input type="text" class="form-control" id="validationCustom01" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                            <div class="invalid-feedback">
+                                Please Input Company Name!
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">Company Phone</label>
+                            <input type="text" class="form-control" id="validationCustom02" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                            <div class="invalid-feedback">
+                                Please Input Company Phone!
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustomUsername">Fax</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroupPrepend">@</span>
+                                </div>
+                                <input type="text" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please Input Fax!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3 mb-3">
+                            <label for="validationCustom03">Country</label>
+                            <input type="text" class="form-control" id="validationCustom03" placeholder="Country" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid Country.
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="validationCustom03">City</label>
+                            <input type="text" class="form-control" id="validationCustom03" placeholder="City" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid city.
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="validationCustom04">State</label>
+                            <input type="text" class="form-control" id="validationCustom04" placeholder="State" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid state.
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="validationCustom05">Zip</label>
+                            <input type="text" class="form-control" id="validationCustom05" placeholder="Zip" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid zip.
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Submit form</button>
+                </form>
+                <script>
+                    (function() {
+                                        'use strict';
+                                        window.addEventListener('load', function() {
+                                           
+                                            var forms = document.getElementsByClassName('needs-validation');
+                                            // Loop over them and prevent submission
+                                            var validation = Array.prototype.filter.call(forms, function(form) {
+                                                form.addEventListener('submit', function(event) {
+                                                    if (form.checkValidity() === false) {
+                                                        event.preventDefault();
+                                                        event.stopPropagation();
+                                                    }
+                                                    form.classList.add('was-validated');
+                                                }, false);
+                                            });
+                                        }, false);
+                                    })();
+                                </script>
+            </div>
+        </div> <!-- end -->
+    </div>
+    <div class="tab-pane tabs-animation fade" id="tab-content-2" role="tabpanel">
+        <div class="main-card mb-3 card">
+            <div class="card-body">
+                <h5 class="card-title">Product/Service Information</h5>
+                <form class="needs-validation1" novalidate>
+                    <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom01">Name</label>
+                            <input type="text" class="form-control" id="validationCustom01" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                            <div class="invalid-feedback">
+                                Please Input Name!
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">SKU</label>
+                            <input type="text" class="form-control" id="validationCustom02">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustomUsername">Category</label>
+                            <div class="input-group">
+
+                                <input type="text" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" list="exampleList">
+                                <datalist id="exampleList">
+                                <option value="1">Binisaya</option>
+
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3 mb-3">
+                            <label for="validationCustom03">Description</label>
+                            <input type="text" class="form-control" id="validationCustom03" placeholder="Description" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="validationCustom03">Price</label>
+                            <input class="form-control input-mask-trigger" data-inputmask="'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 2, 'digitsOptional': false, 'prefix': '$ ', 'placeholder': '0'" required im-insert="true" style="text-align: right;">
+                            <div class="invalid-feedback">
+                                Please provide a valid Price.
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="validationCustom04">Income Account</label>
+                            <input type="text" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required list="incomelist">
+                                <datalist id="incomelist">
+                                <option  value="1">Sales</option>
+                                
+
+                                </datalist>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Insert</button>
+                </form>
+                <script>
+                (function() {
+                    'use strict';
+                    window.addEventListener('load', function() {
+
+                        var forms = document.getElementsByClassName('needs-validation1');
+                        // Loop over them and prevent submission
+                        var validation = Array.prototype.filter.call(forms, function(form) {
+                            form.addEventListener('submit', function(event) {
+                                if (form.checkValidity() === false) {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                }
+                                form.classList.add('was-validated');
+                            }, false);
+                        });
+                    }, false);
+                })();
+                </script>
+            </div>
+        </div> <!-- end -->
+    </div>
+</div>
+{% endblock %}

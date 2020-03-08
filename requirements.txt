@@ -1,0 +1,6 @@
+Django
+gunicorn
+postgres
+pytz
+psycopg2
+whitenoise

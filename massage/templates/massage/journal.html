@@ -1,0 +1,153 @@
+{% extends "massage/includes.html" %}
+{% block title %}
+JOURNAL
+{% endblock %}
+{% block pagetitle %}
+Tranquil Touch Massage
+{% endblock %}
+{% block pagetitlesubheading %}
+Journal Entry
+{% endblock %}
+{% block reportsbtn %}
+{% endblock %}
+{% block scripts %}
+<script>
+
+// var str = "$100.00";
+//   var res = str.substring(1)
+var rowid = 1;
+function removerow(id){
+    $("#tr"+id).hide('slow',"linear",remove(id));
+}
+function remove(id){
+    $('#tr'+id).remove();
+}
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+
+                var forms = document.getElementsByClassName('needs-validation1');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                             form.classList.add('was-validated');
+                        }
+                        else{
+                             event.preventDefault();
+                             event.stopPropagation();
+                             form.classList.add('was-validated');
+
+                     var date =   $("#date").val();
+                  var acName =   $("#account").val();
+                  var debits =   $("#debits").val();
+                  var credits =   $("#credits").val();
+                  var desc =   $("#desc").val();
+                  var acID  = parseFloat(acName);
+                  var acName1 = acName.substring(3)
+                    
+                $('#journaltable > tbody:last-child').append(
+                    '<tr role="row" class="odd" id="tr'+rowid+'">'+
+                    '<td>'+date+'</td>'+
+                    '<td>'+acID+'</td>'+
+                    '<td>'+acName1+'</td>'+
+                    '<td data-override="'+debits+'">$'+debits+'</td>'+
+                    '<td data-override="'+credits+'">$'+credits+'</td>'+
+                    '<td>'+desc+'</td>'+
+                    
+                    '<td><button class="btn btn-danger" onclick="removerow('+rowid+')">DELETE</button></td>'+
+                    
+                    '</tr>');
+
+               $("#account").val('');
+               $("#debits").val('');
+               $("#credits").val('');
+               $("#desc").val('');
+                $("#date").val('');
+
+               form.classList.remove("was-validated");
+                            rowid++;
+                        }
+                       
+                    }, false);
+                });
+            }, false);
+        })();
+
+$('#submit-table').click( function() {
+  var table = $('#journaltable').tableToJSON({ignoreColumns: [6]}); // Convert the table into a javascript object
+
+  alert(JSON.stringify(table));
+});
+        </script>
+{% endblock %}
+{% block body %}
+<div class="main-card mb-3 card">
+    <div class="card-body">
+        <h5 class="card-title">Product/Service Information</h5>
+        <form class="needs-validation1" novalidate>
+            <div class="form-row">
+                <div class="col-md-2 mb-3">
+                    <label for="validationCustom01">Date</label>
+                    <input id="date" class="form-control input-mask-trigger" data-inputmask-alias="datetime" data-inputmask-inputformat="mm/dd/yyyy"
+ required im-insert="true" style="text-align: right;">
+                    
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="validationCustom01">Account</label>
+                    
+                    <select name="" class="custom-select" required id="account">
+                        <option value="">Choose Account</option>
+                        <option value="110Sales">110 Sales</option>
+                    </select>
+                </div>
+                <div class="col-md-1 mb-3">
+                    <label for="validationCustom02">Debits</label>
+                    <input id="debits" class="form-control input-mask-trigger" data-inputmask="'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 2, 'digitsOptional': false,  'placeholder': '0'" required im-insert="true" style="text-align: right;">
+                </div>
+                <div class="col-md-1 mb-3">
+                    <label for="validationCustomUsername">Credits</label>
+                    <div class="input-group">
+                        <input id="credits" class="form-control input-mask-trigger" data-inputmask="'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 2, 'digitsOptional': false,  'placeholder': '0'" required im-insert="true" style="text-align: right;">
+                    </div>
+                </div>
+                <div class="col-md-5 mb-3">
+                    <label for="validationCustom03">Description</label>
+                    <input type="text" class="form-control" id="desc" placeholder="Description" required>
+                </div>
+
+            </div>
+            <button class="btn btn-primary" type="submit">Insert</button>
+        </form>
+    </div>
+</div>
+
+<div class="main-card mb-3 card">
+    <div class="card-body">
+        <h5 class="card-title text-center">Journal Number 001</h5>
+
+        <table style="width: 100%;" id="journaltable" class="table table-hover table-sm table-striped table-bordered " role="grid">
+            <thead>
+                <tr role="row">
+                    <th>DATE</th>
+                    <th style="width: 150px !important;">ACCOUNT NUMBER</th>
+                    <th style="width: 150px !important;">ACCOUNT NAME</th>
+                    <th style="width: 150px;">DEBITS</th>
+                    <th style="width: 150px;">CREDITS</th>
+                    <th>DESCRIPTION</th>
+                    
+                    <th style="width: 150px;">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+               
+            </tbody>
+        </table>
+
+
+<button class="btn btn-primary" id="submit-table">SAVE</button>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends "massage/includes.html" %}
+{% block title %}
+LEDGER
+{% endblock %}
+
+{% block pagetitle %}
+Tranquil Touch Massage
+{% endblock %}
+
+{% block pagetitlesubheading %}
+The Companys Ledger
+{% endblock %}
+
+
+{% block reportsbtn %}
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
+
+{% block body %}
+<div class="main-card mb-3 card">
+    <div class="card-body table-responsive">
+        <div class="row">
+            <div class="col-md-6 col-lg-6 col-sm-12">
+                <p>Report Period</p>
+                <form class="needs-validation" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="text" id="firstday" class="form-control" required placeholder="Starting date" data-toggle="datepicker-year">
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please Input Starting Date!
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" required placeholder="End date" data-toggle="datepicker-year">
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please Input End Date!
+                        </div>
+                    </div>
+                    <input type="submit" value="Run Report" class="btn btn-success">
+                </form>
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-12">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main-card mb-3 card">
+    <div class="card-body table-responsive">
+        <div class="text-center">
+            <h3>Tranquil Touch Massage</h3>
+            <p><strong>General Ledger</strong></p>
+            <p>As of March 6-10, 2020</p>
+            <hr>
+        </div>
+        <table style="width: 100%;" class="table table-hover table-striped table-bordered " role="grid">
+            <thead>
+                <tr role="row">
+                    <th style="width: 20px !important;">Category</th>
+                    <th style="width: 157px;">Particulars</th>
+                    <th style="width: 67px;">Description</th>
+                    <th style="width: 67px;">Account Number</th>
+                    <th style="width: 67px;">Debit</th>
+                    <th style="width: 67px;">Credit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Asset</td>
+                    <td tabindex="0" class="sorting_1">Cash</td>
+                    <td>Cash</td>
+                    <td>110</td>
+                    <td>$10000.00</td>
+                    <td>$0.00</td>
+                </tr>
+                  <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Asset</td>
+                    <td tabindex="0" class="sorting_1">Cash</td>
+                    <td>Cash</td>
+                    <td>110</td>
+                    <td>$10000.00</td>
+                    <td>$0.00</td>
+
+                </tr>
+                  <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1"><strong>2rows</strong></td>
+                    <td tabindex="0" class="sorting_1"></td>
+                    <td></td>
+                    <td></td>
+                   <td> <strong>$20000.00</strong></td>
+                    <td><strong>$0.00</strong></td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+
+
+
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+
+
+{% endblock %}

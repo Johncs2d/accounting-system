@@ -1,0 +1,67 @@
+{% extends "massage/includes.html" %}
+{% block title %}
+Chart of Accounts
+{% endblock %}
+{% block pagetitle %}
+Tranquil Touch Massage
+{% endblock %}
+{% block pagetitlesubheading %}
+Chart of Accounts
+{% endblock %}
+{% block reportsbtn %}
+<div class="row ml-5">
+    <ul class="header-menu nav">
+        <li class="btn-group nav-item">
+            <a href="javascript:void(0);" onclick="addaccount();" class="nav-link">
+                <i class="nav-link-icon fa fa-plus-circle icon-gradient bg-happy-itmeo"></i>
+                New Account
+            </a>
+        </li>
+    </ul>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function addaccount() {
+    Swal.fire({
+        title: 'Add Account',
+        html: '<input id="swal-input1" min="1" type="number" placeholder="Account Number" class="swal2-input">' +
+              '<input id="swal-input1"  type="text" placeholder="Account Name" class="swal2-input">',
+        focusConfirm: false,
+        showCancelButton: true,
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+        }
+    })
+}
+</script>
+{% endblock %}
+{% block body %}
+<div class="main-card mb-3 card">
+    <div class="card-body table-responsive">
+        <table style="width: 100%;" id="example" class="table table-hover table-striped table-bordered dataTable dtr-inline" role="grid">
+            <thead>
+                <tr role="row">
+                    <th class="sorting_asc" tabindex="0" rowspan="1" colspan="1" style="width: 137.2px;">ACCOUNT NUMBER</th>
+                    <th tabindex="0" rowspan="1" colspan="1" style="width: 137.2px;">NAME</th>
+                    <th tabindex="0" rowspan="1" colspan="1" style="width: 217.2px;">TYPE</th>
+                    <th tabindex="0" rowspan="1" colspan="1" style="width: 98.2px;">DETAIL TYPE</th>
+                    <th tabindex="0" rowspan="1" colspan="1" style="width: 48.2px;">BALANCE</th>
+                    <th tabindex="0" rowspan="1" colspan="1" style="width: 101.2px;">BANK BALANCE</th>
+                    <th tabindex="0" rowspan="1" colspan="1" style="width: 76.2px;">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">110</td>
+                    <td>Cash and cash equivalents</td>
+                    <td>Cash and cash equivalents</td>
+                    <td>Cash and cash equivalents</td>
+                    <td>0.00</td>
+                    <td></td>
+                    <td><button class="btn btn-success">EDIT</button></td>
+                </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}

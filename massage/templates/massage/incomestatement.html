@@ -1,0 +1,159 @@
+{% extends "massage/includes.html" %}
+{% block title %}
+INCOME STATEMENT
+{% endblock %}
+
+{% block pagetitle %}
+Tranquil Touch Massage
+{% endblock %}
+
+{% block pagetitlesubheading %}
+The Companys Income Statement
+{% endblock %}
+
+
+{% block reportsbtn %}
+
+{% endblock %}
+
+{% block scripts%}
+
+{% endblock %}
+
+{% block body %}
+
+<div class="main-card mb-3 card">
+    <div class="card-body table-responsive">
+        <div class="row">
+            <div class="col-md-6 col-lg-6 col-sm-12">
+                <p>Report Period</p>
+                <form class="needs-validation" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" required placeholder="Starting date" data-toggle="datepicker-year">
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please Input Starting Date!
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" required placeholder="End date" data-toggle="datepicker-year">
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please Input End Date!
+                        </div>
+                    </div>
+                    <input type="submit" value="Run Report" class="btn btn-success">
+                                    </form>
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-12">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main-card mb-3 card">
+    <div class="card-body table-responsive">
+        <div class="text-center">
+            <h3>Tranquil Touch Massage</h3>
+            <p><strong>Income Statement</strong></p>
+            <p>As of March 6, 2020</p>
+            <hr>
+        </div>
+        <table style="width: 100%;" class="table table-sm table-hover table-striped" role="grid">
+            <thead>
+            	 <tr role="row">
+                    <th><h3><strong>Revenue</strong></h3></th>
+                    <th></th>
+                    <th></th>
+                    
+                   
+                </tr>
+                <tr role="row">
+                    <th>Particulars</th>
+                    <th style="width: 250px;">MONTH</th>
+                    <th>VALUES</th>
+                   
+                </tr>
+            </thead>
+            <tbody>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Service Income</td>
+                    <td tabindex="0" class="sorting_1">March</td>
+                    <td>$1000.00</td>
+                    
+                </tr>
+
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1"><strong>Gross Income</strong></td>
+                    <td tabindex="0" class="sorting_1"></td>
+                    <td><strong><u>$1000.00</u></strong></td>
+                    
+                </tr>
+               
+               
+            </tbody>
+
+             <thead>
+            	
+               <tr role="row">
+                    <th><h3><strong>Expenses</strong></h3></th>
+                    <th></th>
+                    <th></th>
+                    
+                   
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Service Income</td>
+                    <td tabindex="0" class="sorting_1">March</td>
+                    <td>$2000.00</td>
+                    
+                </tr>
+
+                 <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1"><strong>Total Expense</strong></td>
+                    <td tabindex="0" class="sorting_1"></td>
+                    <td><strong><u>$2000.00</u></strong></td>
+                    
+                </tr>
+
+                  <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1"><strong>Net Income</strong></td>
+                    <td tabindex="0" class="sorting_1"></td>
+                    <td><strong style="border-bottom: double;">$1000.00</strong></td>
+                    
+                </tr>
+                 
+            </tbody>
+
+
+
+
+        </table>
+    </div>
+</div>
+<script>
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+{% endblock %}

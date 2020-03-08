@@ -1,0 +1,251 @@
+{% extends "massage/includes.html" %}
+{% block title %}
+BALANCE SHEET
+{% endblock %}
+{% block pagetitle %}
+Tranquil Touch Massage
+{% endblock %}
+{% block pagetitlesubheading %}
+The Companys Balance Sheet
+{% endblock %}
+{% block reportsbtn %}
+{% endblock %}
+{% block scripts%}
+{% endblock %}
+{% block body %}
+<div class="main-card mb-3 card">
+    <div class="card-body table-responsive">
+        <div class="row">
+            <div class="col-md-6 col-lg-6 col-sm-12">
+                <p>Report Period</p>
+                <form class="needs-validation" novalidate>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" required placeholder="Starting date" data-toggle="datepicker-year">
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please Input Starting Date!
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" required placeholder="End date" data-toggle="datepicker-year">
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please Input End Date!
+                        </div>
+                    </div>
+                    <input type="submit" value="Run Report" class="btn btn-success">
+                </form>
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-12">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main-card mb-3 card">
+    <div class="card-body table-responsive">
+        <div class="text-center">
+            <h3>Tranquil Touch Massage</h3>
+            <p><strong>Balance Sheet</strong></p>
+            <p>As of March 6, 2020</p>
+            <hr>
+        </div>
+        <table style="width: 100%;" class="table table-sm table-hover table-striped" role="grid">
+            <thead>
+                <tr role="row">
+                    <th>
+                        <h3><strong>Assets</strong></h3>
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr role="row">
+                    <th>Current Assets</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Cash</td>
+                    <td>$1000.00</td>
+                </tr>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Accounts Receivable</td>
+                    <td>$1000.00</td>
+                </tr>
+                <tr role="row" class="odd" style="border-top: dashed;">
+                    <td tabindex="0" class="sorting_1"><strong>Total Current Assets</strong></td>
+                    <td >$2000.00</td>
+                </tr>
+               
+            </tbody>
+
+             <thead>
+             	 <tr role="row">
+                    <th><br></th>
+                    <th><br></th>
+                </tr>
+                
+               
+                <tr role="row">
+                    <th>Long Term Assets</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+
+
+             <tbody>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Equipment</td>
+                    <td>$10000.00</td>
+                </tr>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Land</td>
+                    <td>$100000.00</td>
+                </tr>
+          
+
+                  <tr role="row" class="odd" style="border-bottom: double; border-top: dashed;">
+                    <td tabindex="0" class="sorting_1"><strong>Total Assets</strong></td>
+                    <td >$112000.00</td>
+                </tr>
+               
+            </tbody>
+
+
+
+             <thead>
+                <tr role="row">
+                    <th>
+                        <h3><strong>Liabilities</strong></h3>
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr role="row">
+                    <th>Current Liabilities</th>
+                </tr>
+            </thead>
+
+
+            <tbody>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Accounts Payable</td>
+                    <td>$1000.00</td>
+                </tr>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Accured Expenses</td>
+                    <td>$1000.00</td>
+                </tr>
+                <tr role="row" class="odd" style="border-top: dashed;">
+                    <td tabindex="0" class="sorting_1"><strong>Total Current Liabilities</strong></td>
+                    <td >$2000.00</td>
+                </tr>
+               
+            </tbody>
+
+
+              <thead>
+             	 <tr role="row">
+                    <th><br></th>
+                    <th><br></th>
+                </tr>
+                
+               
+                <tr role="row">
+                    <th>Long Term Assets</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+
+                <tbody>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Long-term Debt</td>
+                    <td>$10000.00</td>
+                </tr>
+                
+                  <tr role="row" class="odd" style="border-bottom: double; border-top: dashed;">
+                    <td tabindex="0" class="sorting_1"><strong>Total Liabilities</strong></td>
+                    <td >$12000.00</td>
+                </tr>
+               
+            </tbody>
+
+
+              <thead>
+                <tr role="row">
+                    <th>
+                        <h3><strong>Share Holders Equity</strong></h3>
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+              
+            </thead>
+
+
+               <tbody>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Equity Capital</td>
+                    <td>$1000.00</td>
+                </tr>
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">Retained Earnings</td>
+                    <td>$1000.00</td>
+                </tr>
+                <tr role="row" class="odd" style="border-top: dashed;">
+                    <td tabindex="0" class="sorting_1"><strong>Share Holders Equity</strong></td>
+                    <td >$2000.00</td>
+                </tr>
+
+
+                  <tr role="row" class="odd" style="border-bottom: double; border-top: dashed;">
+                    <td tabindex="0" class="sorting_1"><strong>Total Liabilities & Share Holders Equity</strong></td>
+                    <td >$14000.00</td>
+                </tr>
+
+                <tr>
+                	<td></td>
+                	<td><br>
+                		<br>
+                		<br>
+                		<br></td>
+                </tr>
+
+                <tr><td>
+                	Check
+                </td>
+                <td>
+                	0.00
+                </td></tr>
+               
+               
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<script>
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+{% endblock %}
