@@ -4,3 +4,4 @@ postgres
 pytz
 psycopg2
 whitenoise
+argon2-cffi

@@ -22,16 +22,117 @@ Chart of Accounts
 {% endblock %}
 {% block scripts %}
 <script>
+$(document).ready(function() {
+    $.ajaxSetup({
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+    });
+
+    `{% for x in chart %}`
+    $('#chartofaccs > tbody:last-child').append(
+        `<tr>
+                    <td id="num{{x.id}}">{{x.account_number}}</td>
+                    <td id="name{{x.id}}">{{x.account_name}}</td>
+                    <td id="type{{x.id}}">{{x.account_type}}</td>
+                    <td id="detail{{x.id}}">{{x.account_detailtype}}</td>
+                    <td id="bal{{x.id}}">$ {{x.account_debbalance}}</td>
+                    <td id="bal{{x.id}}">$ {{x.account_credbalance}}</td>
+                    </tr>`
+    );
+    `{% endfor %}`
+
+
+
+
+});
+
+
 function addaccount() {
     Swal.fire({
         title: 'Add Account',
-        html: '<input id="swal-input1" min="1" type="number" placeholder="Account Number" class="swal2-input">' +
-              '<input id="swal-input1"  type="text" placeholder="Account Name" class="swal2-input">',
+        html: 
+            `<input id="accnum" min="1" type="number" placeholder="Account Number" class="swal2-input">
+             <input id="accname"  type="text" placeholder="Account Name" class="swal2-input">
+             <select class="form-control" id="type">
+             <option value="">SELECT TYPE</option>
+             <option value="Current assets">Current assets</option>
+             <option value="Fixed assets">Fixed assets</option>
+             <option value="Non-current assets">Non-current assets</option>
+             <option value="Current liabilities">Current liabilities</option>
+             <option value="Non-current liabilities">Non-current liabilities</option>
+             <option value="Owner's equity">Owner's equity</option>
+             <option value="Expenses">Expenses</option>
+             <option value="Other income">Other income</option>
+             </select>
+             <input type="text" placeholder="Detail Type" class="swal2-input" id="detailed">`,
         focusConfirm: false,
         showCancelButton: true,
         showLoaderOnConfirm: true,
+        allowOutsideClick: false,
+        confirmButtonText: "INSERT",
+
         preConfirm: () => {
-        }
+            if (document.getElementById('accnum').value && document.getElementById('accname').value &&
+                document.getElementById('type').value && document.getElementById('detailed').value) {
+                let number = $("#accnum").val();
+                let name = $("#accname").val();
+                let type = $("#type").val();
+                let detail = $("#detailed").val();
+
+                $.ajax({
+                        url: "/insertaccount",
+                        type: 'POST',
+                        data: {
+                            number: number,
+                            name: name,
+                            type: type,
+                            detail: detail,
+                        },
+                    })
+                    .done(function(data) {
+                        $('#chartofaccs > tbody:last-child').append(
+                            `<tr>
+                    <td>${number}</td>
+                    <td>${name}</td>
+                    <td>${type}</td>
+                    <td>${detail}</td>
+                    <td>$0</td>
+                   
+                    
+                    </tr>`);
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Account Added',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    })
+                    .fail(function(data) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: `Something went wrong! ${data.responseText}`,
+                            footer: '<a href>Why do I have this issue?</a>'
+                        })
+                    })
+
+            } else {
+                if (!$("#accnum").val()) {
+                    Swal.showValidationMessage('Account Number Cannot Be Empty');
+                } else if (!$("#accname").val()) {
+                    Swal.showValidationMessage('Account Name Cannot Be Empty')
+                } else if (!$("#type").val()) {
+                    Swal.showValidationMessage('Account Type Cannot Be Empty')
+                } else if (!$("#detailed").val()) {
+                    Swal.showValidationMessage('Account Detail Cannot Be Empty')
+                } else {
+                    Swal.showValidationMessage('Inputs Cannot Be Empty')
+                }
+
+            }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+
     })
 }
 </script>
@@ -39,28 +140,19 @@ function addaccount() {
 {% block body %}
 <div class="main-card mb-3 card">
     <div class="card-body table-responsive">
-        <table style="width: 100%;" id="example" class="table table-hover table-striped table-bordered dataTable dtr-inline" role="grid">
+        <table style="width: 100%;" id="chartofaccs" class="table table-hover table-striped table-bordered dataTable dtr-inline" role="grid">
             <thead>
                 <tr role="row">
                     <th class="sorting_asc" tabindex="0" rowspan="1" colspan="1" style="width: 137.2px;">ACCOUNT NUMBER</th>
                     <th tabindex="0" rowspan="1" colspan="1" style="width: 137.2px;">NAME</th>
                     <th tabindex="0" rowspan="1" colspan="1" style="width: 217.2px;">TYPE</th>
                     <th tabindex="0" rowspan="1" colspan="1" style="width: 98.2px;">DETAIL TYPE</th>
-                    <th tabindex="0" rowspan="1" colspan="1" style="width: 48.2px;">BALANCE</th>
-                  
-                    <th tabindex="0" rowspan="1" colspan="1" style="width: 76.2px;">ACTION</th>
+                    <th tabindex="0" rowspan="1" colspan="1" style="width: 48.2px;">DEBIT BALANCE</th>
+                    <th tabindex="0" rowspan="1" colspan="1" style="width: 48.2px;">CREDIT BALANCE</th>
                 </tr>
             </thead>
             <tbody>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">110</td>
-                    <td>Cash and cash equivalents</td>
-                    <td>Cash and cash equivalents</td>
-                    <td>Cash and cash equivalents</td>
-                    <td>0.00</td>
-                    
-                    <td><button class="btn btn-success">EDIT</button></td>
-                </tr>
+            </tbody>
         </table>
     </div>
 </div>
