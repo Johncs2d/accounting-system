@@ -1,0 +1,171 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="msapplication-tap-highlight" content="no">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/table-to-json@1.0.0/lib/jquery.tabletojson.min.js" integrity="sha256-H8xrCe0tZFi/C2CgxkmiGksqVaxhW0PFcUKZJZo1yNU=" crossorigin="anonymous"></script>
+    <style>
+        @font-face {
+    font-family: 'Font Awesome 5 Free';
+    font-style: normal;
+    font-weight: 900;
+    src: url({% static 'massage/fonts/fa-solid-900.eot' %});
+    src: url({% static 'massage/fonts/fa-solid-900.eot?#iefix' %}) format("embedded-opentype"), url({% static 'massage/fonts/fa-solid-900.woff2' %}) format("woff2"), url({% static 'massage/fonts/fa-solid-900.woff' %}) format("woff"), url({% static 'massage/fonts/fa-solid-900.ttf' %}) format("truetype"), url({% static 'massage/fonts/fa-solid-900.svg#fontawesome' %}) format("svg")
+}
+
+@font-face {
+    font-family: 'Pe-icon-7-stroke';
+    src: url({% static 'massage/fonts/Pe-icon-7-stroke.eot' %});
+    src: url({% static 'massage/fonts/Pe-icon-7-stroke.eot?#iefixd7yf1v' %}) format("embedded-opentype"), url({% static 'massage/fonts/Pe-icon-7-stroke.woff' %}) format("woff"), url({% static 'massage/fonts/Pe-icon-7-stroke.ttf' %}) format("truetype"), url({% static 'massage/fonts/Pe-icon-7-stroke.svg#Pe-icon-7-stroke' %}) format("svg");
+    font-weight: normal;
+    font-style: normal
+}
+
+@font-face {
+    font-family: 'Linearicons-Free';
+    src: url({% static 'massage/fonts/Linearicons-Free.eot'%});
+    src: url({% static 'massage/fonts/Linearicons-Free.eot?#iefixw118d'%}) format("embedded-opentype"), url({% static 'massage/fonts/Linearicons-Free.woff2'%}) format("woff2"), url({% static 'massage/fonts/Linearicons-Free.woff'%}) format("woff"), url({% static 'massage/fonts/Linearicons-Free.ttf'%}) format("truetype"), url({% static 'massage/fonts/Linearicons-Free.svg#Linearicons-Free'%}) format("svg");
+    font-weight: normal;
+    font-style: normal
+}
+
+
+.app-header__logo .logo-src {
+
+    background: url({% static 'massage/images/logo-inverse.png'%})
+}
+
+.app-header.header-text-light .app-header__logo .logo-src {
+    background: url({% static 'massage/images/logo.png'%})
+}
+
+.app-header.header-text-dark .app-header__logo .logo-src {
+    background: url({% static 'massage/images/logo-inverse.png'%})
+}
+
+
+.app-sidebar.sidebar-text-light .app-header__logo .logo-src {
+    background: url({% static 'massage/images/logo.png'%})
+}
+
+.app-logo {
+    background: url({% static 'massage/images/logo-inverse.png'%})
+}
+
+
+.app-logo-inverse {
+   background: url({% static 'massage/images/logo.png'%})
+}
+</style>
+    <link rel="stylesheet" href="{% static 'massage/main.css' %}" />
+
+<body>
+    <div class="app-container app-theme-white body-tabs-shadow">
+        <div class="app-container">
+            <div class="h-100">
+                <div class="h-100 no-gutters row">
+                    <div class="h-100 d-md-flex d-sm-block bg-white justify-content-center align-items-center col-md-12 col-lg-7">
+                        <div class="mx-auto app-login-box col-sm-12 col-md-10 col-lg-9">
+                            <div class="app-logo"></div>
+                            <h4>
+                                <div>Welcome,</div>
+                                <span>It only takes a <span class="text-success">few seconds</span> to create your account</span>
+                            </h4>
+                            <div>
+                                <form class='needs-validation' novalidate method="POST">
+                                    <div class="form-row">
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label for="exampleEmail" class="">
+                                                    <span class="text-danger">*</span> Email</label>
+                                                <input required name="email" id="exampleEmail" placeholder="Email here..." type="email" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label for="exampleName" class="">Name</label>
+                                                <input required name="text" id="exampleName" placeholder="Name here..." type="text" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label for="examplePassword" class="">
+                                                    <span class="text-danger">*</span> Password</label>
+                                                <input required name="password" id="examplePassword" placeholder="Password here..." type="password" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="position-relative form-group">
+                                                <label for="examplePasswordRep" class="">
+                                                    <span class="text-danger">*</span> Repeat Password</label>
+                                                <input required name="passwordrep" id="examplePasswordRep" placeholder="Repeat Password here..." type="password" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 position-relative form-check">
+                                        <input required name="check" id="exampleCheck" type="checkbox" class="form-check-input">
+                                        <label for="exampleCheck" class="form-check-label">Accept our <a href="javascript:void(0);">Terms and Conditions</a>.</label>
+                                    </div>
+                                    <div class="mt-4 d-flex align-items-center">
+                                        <h5 class="mb-0">Already have an account?
+                                            <a href="javascript:void(0);" class="text-primary">Sign in</a></h5>
+                                        <div class="ml-auto">
+                                            <button type="submit" class="btn-wide btn-pill btn-shadow btn-hover-shine btn btn-primary btn-lg">Create Account</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-lg-flex d-xs-none col-lg-5">
+                        <div class="slider-light">
+                            <div class="slick-slider slick-initialized">
+                                <div>
+                                    <div class="position-relative h-100 d-flex justify-content-center align-items-center bg-premium-dark" tabindex="-1">
+                                        <div class="slide-img-bg" style="background-image: url('assets/images/originals/citynights.jpg');"></div>
+                                        <div class="slider-content">
+                                            <h3>Scalable, Modular, Consistent</h3>
+                                            <p>Easily exclude the components you don't require. Lightweight, consistent Bootstrap based styles across all elements and components</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="{% static 'massage/scripts/main.js' %}"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script>
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    </script>
+</body>
+
+</html>
