@@ -16,11 +16,14 @@ The Companys Trial Balance
 <div class="main-card mb-3 card">
     <div class="card-body table-responsive">
         <div class="row">
+
             <div class="col-md-6 col-lg-6 col-sm-12">
-                <p>Report Period</p>
-                <form class="needs-validation" novalidate>
+                <h4 class="text-center">SELECT REPORT PERIOD</h4>
+                <form class="needs-validation" novalidate method="POST" action="{% url 'trialbalance' %}">
+
+                    {% csrf_token %}
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" required placeholder="Starting date" data-toggle="datepicker-year">
+                        <input type="text" name="startdate" class="form-control" required placeholder="Starting date" data-toggle="datepicker-year">
                         <div class="valid-feedback">
                             Looks good!
                         </div>
@@ -29,7 +32,7 @@ The Companys Trial Balance
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" required placeholder="End date" data-toggle="datepicker-year">
+                        <input type="text" name="enddate" class="form-control" required placeholder="End date" data-toggle="datepicker-year">
                         <div class="valid-feedback">
                             Looks good!
                         </div>
@@ -38,9 +41,30 @@ The Companys Trial Balance
                         </div>
                     </div>
                     <input type="submit" value="Run Report" class="btn btn-success">
-                                    </form>
+            </form>
             </div>
             <div class="col-md-6 col-lg-6 col-sm-12">
+                <h4 class="text-center">SELECT JOURNAL TO REPORT</h4>
+                <form class="needs-validation" novalidate method="POST" action="{% url 'trialbalance' %}">
+
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        
+                        <select name="journs" id="" required class="custom-select">
+                            <option value="">SELECT JOURNAL</option>
+                            {% for x in Journals %}
+                            <option value="{{x.id}}">{{x.datecreated}}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please Input Journal!
+                        </div>
+                    </div>
+                    <input type="submit" value="Run Report" class="btn btn-success">
+            </form>
             </div>
         </div>
     </div>
@@ -48,9 +72,18 @@ The Companys Trial Balance
 <div class="main-card mb-3 card">
     <div class="card-body table-responsive">
         <div class="text-center">
+            
             <h3>Tranquil Touch Massage</h3>
             <p><strong>TRIAL BALANCE</strong></p>
-            <p>As of March 6, 2020</p>
+            {% if Startdate is None %}
+                {% for x in journals %}
+                    {% if forloop.first %}
+                    <p>Journal # {{x.journalid.id}} Date: {{x.journalid.datecreated}}</p>
+                    {%endif%}
+                {% endfor %}
+            {% else %}
+            <p>As of {{Startdate}} to {{Endate}}</p>
+            {% endif %}
             <hr>
         </div>
         <table style="width: 100%;" class="table table-hover table-striped table-bordered " role="grid">
@@ -63,18 +96,14 @@ The Companys Trial Balance
                 </tr>
             </thead>
             <tbody>
+                {% for x in journals %}
                 <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">110</td>
-                    <td tabindex="0" class="sorting_1">Cash and cash equivalents</td>
-                    <td>$100.00</td>
-                    <td></td>
+                    <td tabindex="0" class="sorting_1">{{x.account_id.account_number}}</td>
+                    <td tabindex="0" class="sorting_1">{{x.account_id.account_name}}</td>
+                    <td>${{x.account_debbalance}}</td>
+                    <td>${{x.account_credbalance}}</td>
                 </tr>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">120</td>
-                    <td tabindex="0" class="sorting_1">Accounts Receivable</td>
-                    <td>$500.00</td>
-                    <td></td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

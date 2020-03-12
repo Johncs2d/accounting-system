@@ -19,8 +19,8 @@ class chartofaccounts(models.Model):
 	account_name = models.CharField(max_length=100,unique=True)
 	account_type = models.CharField(max_length=100,choices = typeschoices)
 	account_detailtype = models.CharField(max_length=100)
-	account_debbalance = models.DecimalField(max_digits = 10, decimal_places = 4)
-	account_credbalance = models.DecimalField(max_digits = 10, decimal_places = 4)
+	account_debbalance = models.DecimalField(max_digits = 12, decimal_places = 2)
+	account_credbalance = models.DecimalField(max_digits = 12, decimal_places = 2)
 
 	def __str__(self):
 		return f"Account Number: {self.account_number} | Account Name: {self.account_name} | Account Type: {self.account_type} | \
@@ -39,7 +39,7 @@ class serviceInfo(models.Model):
 	service_category =  models.ForeignKey(service_category,on_delete=models.PROTECT,null=True, 
 											related_name="service_category")
 	service_description = models.CharField(max_length=100)
-	service_price = models.DecimalField(max_digits = 10, decimal_places = 4)
+	service_price = models.DecimalField(max_digits = 12, decimal_places = 2)
 	service_income_account = models.ForeignKey(chartofaccounts,on_delete=models.PROTECT,
 		null=False,related_name="income_account")
 	def __str__(self):
@@ -70,8 +70,8 @@ class journalcollections(models.Model):
 	transaction_date = models.DateField(("Date"), null=False)
 	account_id = models.ForeignKey(chartofaccounts,on_delete=models.PROTECT,null=True,
 									related_name="journal_account")
-	debits = models.DecimalField(max_digits = 10, decimal_places = 4)
-	credits = models.DecimalField(max_digits = 10, decimal_places = 4)
+	debits = models.DecimalField(max_digits = 12, decimal_places = 2)
+	credits = models.DecimalField(max_digits = 12, decimal_places = 2)
 	description = models.CharField(max_length=200)
 	journalid = models.ForeignKey(journalmain,on_delete=models.PROTECT,null=False,related_name="journals")
 	def __str__(self):
@@ -92,12 +92,19 @@ class logs(models.Model):
 	event_name = models.CharField(max_length=100)
 	account_involved = models.ForeignKey(chartofaccounts,on_delete=models.PROTECT,
 										null=True,related_name="logs_account")
-	amount = models.DecimalField(max_digits = 10, decimal_places = 4)
-	newbalance = models.DecimalField(max_digits = 10, decimal_places = 4)
+	amount = models.DecimalField(max_digits = 12, decimal_places = 2)
+	newbalance = models.DecimalField(max_digits = 12, decimal_places = 2)
 	date = models.DateField(("Date"), default=date.today)
 	def __str__(self):
 		return f"{self.event_name} | {self.account_involved} | {self.amount} | {self.newbalance} | {self.date}"
 
-	
-		
+class journalTotals(models.Model):
+	journalid = models.ForeignKey(journalmain,on_delete=models.PROTECT,null=False,related_name="journalsmain")
+	account_id = models.ForeignKey(chartofaccounts,on_delete=models.PROTECT,null=True,
+									related_name="totals_account")
+	account_number = models.IntegerField()
+	account_debbalance = models.DecimalField(max_digits = 12, decimal_places = 2)
+	account_credbalance = models.DecimalField(max_digits = 12, decimal_places = 2)
+	def __str__(self):
+		return f"{self.journalid.id} || {self.account_id.account_number} || {self.account_number} || {self.account_debbalance} || {self.account_credbalance}"
 		

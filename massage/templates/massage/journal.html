@@ -26,7 +26,6 @@ $('#journaltitle').html('Journal Number: '+maxid);
  });
 
 
-var rowid = 1;
 
 function removerow(id){
     $("#tr"+id).hide('slow',"linear",remove(id));
@@ -59,9 +58,10 @@ function remove(id){
                   var desc =   $("#desc").val();
                   var acID  = parseFloat(acName);
                   var acName1 = acName.substring(3)
+                 
                   
                 $('#journaltable > tbody:last-child').append(
-                    `<tr role="row" class="odd" id="tr${rowid}">
+                   `<tr role="row" class="odd" id="tr${rowid}">
                     <td>${date}</td>
                     <td>${acID}</td>
                     <td>${acName1}</td>
