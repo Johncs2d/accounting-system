@@ -29,7 +29,7 @@ def charts(request):
 	context = {"chart": chartofaccounts.objects.all()}
 	return render(request, "massage/chartsofaccounts.html",context)
 
- #INSERT ACCOUNTS
+#INSERT ACCOUNTS
 def insertaccount(request):
 
 	accountnumber = strip_tags(request.POST["number"])
@@ -263,15 +263,6 @@ def balancesheet(request):
 								transaction_date__lte=newend).filter(account_id__account_type="Owner's equity")\
 								.order_by('account_id__account_number')
 
-					expenses = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type="Expenses")\
-								.order_by('account_id__account_number')
-
-					income = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type="Income")\
-								.order_by('account_id__account_number')			
-					
-
 					context = {	"current_assets":current_assets,
 								"nonCurrent_assets":nonCurrent_assets,
 								"current_liabilities":current_liabilities,
@@ -395,14 +386,11 @@ def inserjournal(request):
 
 	data1 = request.POST["json"]
 
-	f = open(path, 'w')
-
-	f.write(data1)
-
-	f.close()
+	with open(path, 'w') as data_file:
+		data_file.write(data1)
+		data_file.close()
 
 	create = journalmain()
-
 	create.save()
 
 	with open(path) as data_file:
@@ -441,7 +429,7 @@ def inserjournal(request):
 
 			chartofaccs = chartofaccounts.objects.get(account_number=int(x['accnum']))
 
-			obj, created = journalTotals.objects.update_or_create(
+			journalTotals.objects.update_or_create(
 			account_id=chartofaccs,journalid=create,
 			defaults={'account_number':x['accnum'],
 			'account_debbalance': decimal.Decimal(totals3['totaldebs'])+decimal.Decimal(x['deb']),
