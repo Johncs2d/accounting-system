@@ -11,16 +11,58 @@ The Companys Trial Balance
 {% block reportsbtn %}
 {% endblock %}
 {% block scripts %}
+
+<script>
+   $(document).ready(function() {
+       loadbalance();
+   });
+function loadbalance() {
+var totalasset = 0.00;
+var debit = 0.00;
+var credit = 0.00;
+'{% for x in journals %}'
+var debit1 = '{{x.account_debbalance}}';
+var credit1 = '{{x.account_credbalance}}';
+debit = debit + parseFloat(debit1);
+credit = credit + parseFloat(credit1);
+$('#tablebody').append(
+`<tr>
+<td>{{x.account_number}}</td>
+<td>{{x.account_id_account_name}}</td>
+<td >$ {{x.account_debbalance}}</td>
+<td colspan="" rowspan="" headers="">$ {{x.account_credbalance}}</td>
+</tr>`
+);
+
+'{% if forloop.last %}'
+$('#tablebody').append(
+`<tr role="row" class="odd" style="border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Totals</strong></td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${debit}</td>
+<td colspan="" rowspan="" headers="">$${credit}</td>
+
+</tr>`
+);
+
+'{% endif %}'
+'{% endfor %}'
+}
+
+</script>
 {% endblock %}
 {% block body %}
 <div class="main-card mb-3 card">
     <div class="card-body table-responsive">
         <div class="row">
-            <div class="col-md-6 col-lg-6 col-sm-12">
-                <p>Report Period</p>
-                <form class="needs-validation" novalidate>
+
+           <!--  <div class="col-md-6 col-lg-6 col-sm-12">
+                <h4 class="text-center">SELECT REPORT PERIOD</h4>
+                <form class="needs-validation" novalidate method="POST" action="{% url 'trialbalance' %}">
+
+                    {% csrf_token %}
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" required placeholder="Starting date" data-toggle="datepicker-year">
+                        <input type="text" name="startdate" class="form-control" required placeholder="Starting date" data-toggle="datepicker-year">
                         <div class="valid-feedback">
                             Looks good!
                         </div>
@@ -29,7 +71,7 @@ The Companys Trial Balance
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" required placeholder="End date" data-toggle="datepicker-year">
+                        <input type="text" name="enddate" class="form-control" required placeholder="End date" data-toggle="datepicker-year">
                         <div class="valid-feedback">
                             Looks good!
                         </div>
@@ -38,9 +80,30 @@ The Companys Trial Balance
                         </div>
                     </div>
                     <input type="submit" value="Run Report" class="btn btn-success">
-                                    </form>
-            </div>
-            <div class="col-md-6 col-lg-6 col-sm-12">
+            </form>
+            </div> -->
+            <div class="col-md-12 col-lg-12 col-sm-12">
+                <h4 class="text-center">SELECT JOURNAL TO REPORT</h4>
+                <form class="needs-validation" novalidate method="POST" action="{% url 'trialbalance' %}">
+
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        
+                        <select name="journs" id="" required class="custom-select">
+                            <option value="">SELECT JOURNAL</option>
+                            {% for x in Journals %}
+                            <option value="{{x.id}}">{{x.datecreated}}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please Input Journal!
+                        </div>
+                    </div>
+                    <input type="submit" value="Run Report" class="btn btn-success">
+            </form>
             </div>
         </div>
     </div>
@@ -48,11 +111,21 @@ The Companys Trial Balance
 <div class="main-card mb-3 card">
     <div class="card-body table-responsive">
         <div class="text-center">
+            
             <h3>Tranquil Touch Massage</h3>
             <p><strong>TRIAL BALANCE</strong></p>
-            <p>As of March 6, 2020</p>
+            {% if Startdate is None %}
+                {% for x in journals %}
+                    {% if forloop.first %}
+                    <p>Journal # {{x.journalid.id}} Date: {{x.journalid.datecreated}}</p>
+                    {%endif%}
+                {% endfor %}
+            {% else %}
+            <p>As of {{Startdate}} to {{Endate}}</p>
+            {% endif %}
             <hr>
         </div>
+        {% if journals.all %}
         <table style="width: 100%;" class="table table-hover table-striped table-bordered " role="grid">
             <thead>
                 <tr role="row">
@@ -62,21 +135,12 @@ The Companys Trial Balance
                     <th style="width: 67px;">CREDIT</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">110</td>
-                    <td tabindex="0" class="sorting_1">Cash and cash equivalents</td>
-                    <td>$100.00</td>
-                    <td></td>
-                </tr>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">120</td>
-                    <td tabindex="0" class="sorting_1">Accounts Receivable</td>
-                    <td>$500.00</td>
-                    <td></td>
-                </tr>
+            <tbody id="tablebody">
             </tbody>
         </table>
+        {% else %}
+<h1 class="text-center">NO DATA TO SHOW</h1>
+        {% endif %}
     </div>
 </div>
 <script>

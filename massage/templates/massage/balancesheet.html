@@ -11,12 +11,353 @@ The Companys Balance Sheet
 {% block reportsbtn %}
 {% endblock %}
 {% block scripts%}
+<script>
+    $(document).ready(function() {
+
+     currentasset();
+     longtermasset();
+     
+     currentliabilities();
+     nonCurrentliabilities();
+     ownersequity();
+     globaltotals();
+    });
+var assetglobal = 0.00;
+var liabilitiesglobal = 0.00;
+var equityglobal = 0.00;
+function currentasset() {
+var totalasset = 0.00;
+'{% for x in current_assets %}'
+var debit = '{{x.account_debbalance}}';
+var credit = '{{x.account_credbalance}}';
+var total = parseFloat(debit) - parseFloat(credit);
+totalasset = totalasset+total;
+assetglobal = assetglobal + total;
+$('#assetsbody').append(
+`<tr>
+<td>{{x.account_id.account_name}}</td>
+<td>$${total}</td>
+<td colspan="" rowspan="" headers=""></td>
+</tr>`
+);
+
+'{% if forloop.last %}'
+$('#totalassetbody').append(
+`<tr role="row" class="odd" style="border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Total Current Assets</strong></td>
+<td >$${totalasset}</td>
+<td colspan="" rowspan="" headers=""></td>
+</tr>`
+);
+
+'{% endif %}'
+
+'{% empty %}'
+$('#longtermbody').append(
+`<tr>
+<td>N/A</td>
+<td>$0</td>
+<td colspan="" rowspan="" headers=""></td>
+</tr>`
+);
+
+$('#longtermtotal').append(
+`<tr role="row" class="odd" style="border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Total Current Assets</strong></td>
+<td>$0</td>
+<td colspan="" rowspan="" headers=""></td>
+</tr>`
+);
+'{% endfor %}'
+}
+
+
+function longtermasset() {
+var totalasset = 0.00;
+
+'{% for x in nonCurrent_assets %}'
+var debit = '{{x.account_debbalance}}';
+var credit = '{{x.account_credbalance}}';
+var total = parseFloat(debit) - parseFloat(credit);
+totalasset = totalasset+total;
+assetglobal = assetglobal + total;
+$('#longtermbody').append(
+`<tr>
+<td>{{x.account_id.account_name}}</td>
+<td>$${total}</td>
+<td colspan="" rowspan="" headers=""></td>
+</tr>`
+);
+
+'{% if forloop.last %}'
+$('#longtermtotal').append(
+`<tr role="row" class="odd" style="border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Total Assets</strong></td>
+<td>$${totalasset}</td>
+<td colspan="" rowspan="" headers=""></td>
+</tr>`
+);
+
+'{% endif %}'
+'{% empty %}'
+$('#longtermbody').append(
+`<tr>
+<td>N/A</td>
+<td>$0</td>
+<td colspan="" rowspan="" headers=""></td>
+</tr>`
+);
+
+$('#longtermtotal').append(
+`<tr role="row" class="odd" style="border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Total long term Assets</strong></td>
+<td>$0</td>
+<td colspan="" rowspan="" headers=""></td>
+</tr>`
+);
+
+'{% endfor %}'
+
+}
+
+function currentliabilities() {
+var totalfinal = 0.00;
+
+'{% for x in current_liabilities %}'
+var debit = '{{x.account_debbalance}}';
+var credit = '{{x.account_credbalance}}';
+var total = parseFloat(credit) - parseFloat(debit);
+totalfinal = totalfinal+total;
+liabilitiesglobal = liabilitiesglobal + total;
+if (total < 0) {
+total = Math.abs(total);
+// total = "("+total.toString()+")";
+
+}
+if (totalfinal < 0) {
+totalfinal = Math.abs(totalfinal);
+
+
+}
+$('#currentliabilitiesbody').append(
+`<tr>
+<td>{{x.account_id.account_name}}</td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${total}</td>
+</tr>`
+);
+
+'{% if forloop.last %}'
+$('#currentliabilitiestotal').append(
+`<tr role="row" class="odd" style="border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Total Current Liabilities</strong></td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${totalfinal}</td>
+</tr>`
+);
+
+'{% endif %}'
+'{% empty %}'
+$('#currentliabilitiesbody').append(
+`<tr>
+<td>N/A</td>
+<td></td>
+<td>$0</td>
+</tr>`
+);
+
+$('#currentliabilitiestotal').append(
+`<tr role="row" class="odd" style="border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Total Current Liabilities</strong></td>
+<td></td>
+<td>$0</td>
+</tr>`
+);
+
+'{% endfor %}'
+
+}
+
+function nonCurrentliabilities() {
+var totalfinal = 0.00;
+
+'{% for x in nonCurrent_liabilities %}'
+var debit = '{{x.account_debbalance}}';
+var credit = '{{x.account_credbalance}}';
+var total = parseFloat(credit) - parseFloat(debit);
+totalfinal = totalfinal+total;
+liabilitiesglobal = liabilitiesglobal + total;
+if (total < 0) {
+total = Math.abs(total);
+// total = "("+total.toString()+")";
+
+}
+if (totalfinal < 0) {
+totalfinal = Math.abs(totalfinal);
+
+
+}
+$('#noncurrentliabilitiesbody').append(
+`<tr>
+<td>{{x.account_id.account_name}}</td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${total}</td>
+</tr>`
+);
+
+'{% if forloop.last %}'
+$('#noncurrentliabilitiestotal').append(
+`<tr role="row" class="odd" style="border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Total Current Liabilities</strong></td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${totalfinal}</td>
+</tr>`
+);
+
+'{% endif %}'
+'{% empty %}'
+$('#noncurrentliabilitiesbody').append(
+`<tr>
+<td>N/A</td>
+<td></td>
+<td>$0</td>
+</tr>`
+);
+
+$('#noncurrentliabilitiestotal').append(
+`<tr role="row" class="odd" style="border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Total Non Current Liabilities</strong></td>
+<td></td>
+<td>$0</td>
+</tr>`
+);
+
+'{% endfor %}'
+
+}
+
+function ownersequity() {
+var totalfinal = 0.00;
+
+'{% for x in ownersEquity %}'
+var debit = '{{x.account_debbalance}}';
+var credit = '{{x.account_credbalance}}';
+var total = parseFloat(credit) - parseFloat(debit);
+totalfinal = totalfinal+total;
+equityglobal = equityglobal + total;
+if (total < 0) {
+total = Math.abs(total);
+// total = "("+total.toString()+")";
+
+}
+if (totalfinal < 0) {
+totalfinal = Math.abs(totalfinal);
+
+
+}
+$('#equitybody').append(
+`<tr>
+<td>{{x.account_id.account_name}}</td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${total}</td>
+</tr>`
+);
+
+'{% if forloop.last %}'
+$('#equitytotal').append(
+`<tr role="row" class="odd" style="border-bottom: double; border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Total Share Holders Equity</strong></td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${totalfinal}</td>
+</tr>`
+);
+
+'{% endif %}'
+'{% empty %}'
+$('#equitybody').append(
+`<tr>
+<td>N/A</td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$0</td>
+</tr>`
+);
+
+$('#equitytotal').append(
+`<tr role="row" class="odd" style="border-bottom: double; border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Total Share Holders Equity</strong></td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$0</td>
+</tr>`
+);
+
+'{% endfor %}'
+
+}
+
+function globaltotals() {
+
+$('#longtermtotal').append(
+`<tr role="row" class="odd" style="border-top: dashed; border-bottom: double;">
+<td tabindex="0" class="sorting_1"><strong>Total Assets</strong></td>
+<td>$${assetglobal}</td>
+<td colspan="" rowspan="" headers=""></td>
+</tr>`
+);
+
+
+$('#noncurrentliabilitiestotal').append(
+`<tr role="row" class="odd" style="border-top: dashed; border-bottom: double;">
+<td tabindex="0" class="sorting_1"><strong>Total Liabilities</strong></td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${liabilitiesglobal}</td>
+</tr>`
+);
+
+
+$('#finaltotal').append(
+`<tr role="row" class="odd" style="border-bottom: double;">
+<td tabindex="0" class="sorting_1"><strong>Total Liabilities & Owners Equity</strong></td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${liabilitiesglobal + equityglobal}</td>
+</tr>`
+);
+
+
+$('#check').append(
+`< <tr>
+                    <td></td>
+                    <td><br>
+                        <br>
+                        <br>
+                        <br></td>
+                        <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        Check
+                    </td>
+                    <td>
+                       ${assetglobal-(liabilitiesglobal + equityglobal)}
+                    </td>
+                    <td></td>
+                </tr>
+
+</tr>`
+);
+
+
+
+
+}
+
+
+</script>
 {% endblock %}
 {% block body %}
 <div class="main-card mb-3 card">
     <div class="card-body table-responsive">
         <div class="row">
-            <div class="col-md-6 col-lg-6 col-sm-12">
+            <!-- <div class="col-md-6 col-lg-6 col-sm-12">
                 <p>Report Period</p>
                 <form class="needs-validation" novalidate>
                     <div class="input-group mb-3">
@@ -39,8 +380,27 @@ The Companys Balance Sheet
                     </div>
                     <input type="submit" value="Run Report" class="btn btn-success">
                 </form>
-            </div>
-            <div class="col-md-6 col-lg-6 col-sm-12">
+            </div> -->
+            <div class="col-md-12 col-lg-12 col-sm-12">
+                <h4 class="text-center">SELECT JOURNAL TO REPORT</h4>
+                <form class="needs-validation" novalidate method="POST" action="{% url 'balancesheet' %}">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <select name="journs" id="" required class="custom-select">
+                            <option value="">SELECT JOURNAL</option>
+                            {% for x in Journals %}
+                            <option value="{{x.id}}">{{x.datecreated}}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please Input Journal!
+                        </div>
+                    </div>
+                    <input type="submit" value="Run Report" class="btn btn-success">
+                </form>
             </div>
         </div>
     </div>
@@ -50,9 +410,18 @@ The Companys Balance Sheet
         <div class="text-center">
             <h3>Tranquil Touch Massage</h3>
             <p><strong>Balance Sheet</strong></p>
-            <p>As of March 6, 2020</p>
+             {% if Startdate is None %}
+                {% for x in current_assets %}
+                    {% if forloop.first %}
+                    <p>Journal # {{x.journalid.id}} Date: {{x.journalid.datecreated}}</p>
+                    {%endif%}
+                {% endfor %}
+            {% else %}
+            <p>As of {{Startdate}} to {{Endate}}</p>
+            {% endif %}
             <hr>
         </div>
+        {% if current_assets.all and nonCurrent_assets.all and current_liabilities.all and nonCurrent_liabilities.all and ownersequity.all %}
         <table style="width: 100%;" class="table table-sm table-hover table-striped" role="grid">
             <thead>
                 <tr role="row">
@@ -61,63 +430,33 @@ The Companys Balance Sheet
                     </th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
                 <tr role="row">
                     <th>Current Assets</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Cash</td>
-                    <td>$1000.00</td>
-                </tr>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Accounts Receivable</td>
-                    <td>$1000.00</td>
-                </tr>
-                <tr role="row" class="odd" style="border-top: dashed;">
-                    <td tabindex="0" class="sorting_1"><strong>Total Current Assets</strong></td>
-                    <td >$2000.00</td>
-                </tr>
-               
+            <tbody id="assetsbody">
             </tbody>
-
-             <thead>
-             	 <tr role="row">
+            <tbody id="totalassetbody">
+            </tbody>
+            <thead>
+                <tr role="row">
                     <th><br></th>
                     <th><br></th>
+                    <th></th>
                 </tr>
-                
-               
                 <tr role="row">
                     <th>Long Term Assets</th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
-
-
-
-             <tbody>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Equipment</td>
-                    <td>$10000.00</td>
-                </tr>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Land</td>
-                    <td>$100000.00</td>
-                </tr>
-          
-
-                  <tr role="row" class="odd" style="border-bottom: double; border-top: dashed;">
-                    <td tabindex="0" class="sorting_1"><strong>Total Assets</strong></td>
-                    <td >$112000.00</td>
-                </tr>
-               
+            <tbody id="longtermbody">
             </tbody>
-
-
-
-             <thead>
+            <tbody id="longtermtotal">
+            </tbody>
+            <thead>
                 <tr role="row">
                     <th>
                         <h3><strong>Liabilities</strong></h3>
@@ -129,54 +468,27 @@ The Companys Balance Sheet
                     <th>Current Liabilities</th>
                 </tr>
             </thead>
-
-
-            <tbody>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Accounts Payable</td>
-                    <td>$1000.00</td>
-                </tr>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Accured Expenses</td>
-                    <td>$1000.00</td>
-                </tr>
-                <tr role="row" class="odd" style="border-top: dashed;">
-                    <td tabindex="0" class="sorting_1"><strong>Total Current Liabilities</strong></td>
-                    <td >$2000.00</td>
-                </tr>
-               
+            <tbody id="currentliabilitiesbody">
             </tbody>
-
-
-              <thead>
-             	 <tr role="row">
-                    <th><br></th>
-                    <th><br></th>
-                </tr>
-                
-               
+            <tbody id="currentliabilitiestotal">
+            </tbody>
+            <thead>
                 <tr role="row">
-                    <th>Long Term Assets</th>
+                    <th><br></th>
+                    <th><br></th>
+                    <th></th>
+                </tr>
+                <tr role="row">
+                    <th>Non current Liabilities</th>
+                    <th></th>
                     <th></th>
                 </tr>
             </thead>
-
-
-                <tbody>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Long-term Debt</td>
-                    <td>$10000.00</td>
-                </tr>
-                
-                  <tr role="row" class="odd" style="border-bottom: double; border-top: dashed;">
-                    <td tabindex="0" class="sorting_1"><strong>Total Liabilities</strong></td>
-                    <td >$12000.00</td>
-                </tr>
-               
+            <tbody id="noncurrentliabilitiesbody">
             </tbody>
-
-
-              <thead>
+            <tbody id="noncurrentliabilitiestotal">
+            </tbody>
+            <thead>
                 <tr role="row">
                     <th>
                         <h3><strong>Share Holders Equity</strong></h3>
@@ -184,49 +496,19 @@ The Companys Balance Sheet
                     <th></th>
                     <th></th>
                 </tr>
-              
             </thead>
-
-
-               <tbody>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Equity Capital</td>
-                    <td>$1000.00</td>
-                </tr>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Retained Earnings</td>
-                    <td>$1000.00</td>
-                </tr>
-                <tr role="row" class="odd" style="border-top: dashed;">
-                    <td tabindex="0" class="sorting_1"><strong>Share Holders Equity</strong></td>
-                    <td >$2000.00</td>
-                </tr>
-
-
-                  <tr role="row" class="odd" style="border-bottom: double; border-top: dashed;">
-                    <td tabindex="0" class="sorting_1"><strong>Total Liabilities & Share Holders Equity</strong></td>
-                    <td >$14000.00</td>
-                </tr>
-
-                <tr>
-                	<td></td>
-                	<td><br>
-                		<br>
-                		<br>
-                		<br></td>
-                </tr>
-
-                <tr><td>
-                	Check
-                </td>
-                <td>
-                	0.00
-                </td></tr>
-               
-               
+            <tbody id="equitybody">
             </tbody>
-
+            <tbody id="equitytotal">
+            </tbody>
+            <tbody id="finaltotal">
+            </tbody>
+            <tbody id="check">
+            </tbody>
         </table>
+        {% else %}
+        <h1 class="text-center">NO DATA TO SHOW</h1>
+        {% endif %}
     </div>
 </div>
 <script>

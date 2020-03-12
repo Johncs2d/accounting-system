@@ -1,1 +1,1 @@
-[{"date":"03/12/2020","accnum":"110","accname":"Cash","deb":"15000.00","cred":"0.00","des":"SAMPLE"}]
+[{"date":"02/01/2020","accnum":"110","accname":"Cash","deb":"50000.00","cred":"0.00","des":"N/A"},{"date":"02/01/2020","accnum":"300","accname":"John, Capital","deb":"0.00","cred":"50000.00","des":"Initial Investment"},{"date":"02/03/2020","accnum":"140","accname":"Supplies","deb":"20000.00","cred":"0.00","des":"N/A"},{"date":"02/03/2020","accnum":"205","accname":"Accounts Payable","deb":"0.00","cred":"20000.00","des":"Bought Supplies on Account"}]

@@ -24,11 +24,12 @@ The Companys Ledger
 <div class="main-card mb-3 card">
     <div class="card-body table-responsive">
         <div class="row">
-            <div class="col-md-6 col-lg-6 col-sm-12">
+            <!-- <div class="col-md-6 col-lg-6 col-sm-12">
                 <p>Report Period</p>
-                <form class="needs-validation" novalidate>
+                <form class="needs-validation" novalidate method="POST" action="{% url 'ledger' %}">
+                    {% csrf_token %}
                     <div class="input-group mb-3">
-                        <input type="text" id="firstday" class="form-control" required placeholder="Starting date" data-toggle="datepicker-year">
+                        <input type="text" name="startdate" id="firstday" class="form-control" required placeholder="Starting date" data-toggle="datepicker-year">
                         <div class="valid-feedback">
                             Looks good!
                         </div>
@@ -37,7 +38,7 @@ The Companys Ledger
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" required placeholder="End date" data-toggle="datepicker-year">
+                        <input type="text" name="enddate" class="form-control" required placeholder="End date" data-toggle="datepicker-year">
                         <div class="valid-feedback">
                             Looks good!
                         </div>
@@ -47,8 +48,29 @@ The Companys Ledger
                     </div>
                     <input type="submit" value="Run Report" class="btn btn-success">
                 </form>
-            </div>
-            <div class="col-md-6 col-lg-6 col-sm-12">
+            </div> -->
+            <div class="col-md-12 col-lg-12 col-sm-12">
+                <h4 class="text-center">SELECT JOURNAL TO REPORT</h4>
+                <form class="needs-validation" novalidate method="POST" action="{% url 'ledger' %}">
+
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        
+                        <select name="journs" id="" required class="custom-select">
+                            <option value="">SELECT JOURNAL</option>
+                            {% for x in Journals %}
+                            <option value="{{x.id}}">{{x.datecreated}}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Invalid Input!
+                        </div>
+                    </div>
+                    <input type="submit" value="Run Report" class="btn btn-success">
+            </form>
             </div>
         </div>
     </div>
@@ -58,9 +80,21 @@ The Companys Ledger
         <div class="text-center">
             <h3>Tranquil Touch Massage</h3>
             <p><strong>General Ledger</strong></p>
-            <p>As of March 6-10, 2020</p>
+            {% if Startdate is None %}
+                {% for x in journals %}
+                    {% if forloop.first %}
+                    <p>Journal # {{x.journalid.id}} Date: {{x.journalid.datecreated}}</p>
+                    {%endif%}
+                {% endfor %}
+            {% else %}
+            <p>As of {{Startdate}} to {{Endate}}</p>
+            {% endif %}
             <hr>
+            
         </div>
+        {% if signs is None %}
+        <h1 class="text-center">YOU CAN GENERATE REPORTS ABOVE</h1>
+        {% else %}
         <table style="width: 100%;" class="table table-hover table-striped table-bordered " role="grid">
             <thead>
                 <tr role="row">
@@ -73,34 +107,29 @@ The Companys Ledger
                 </tr>
             </thead>
             <tbody>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Asset</td>
-                    <td tabindex="0" class="sorting_1">Cash</td>
-                    <td>Cash</td>
-                    <td>110</td>
-                    <td>$10000.00</td>
-                    <td>$0.00</td>
-                </tr>
-                  <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Asset</td>
-                    <td tabindex="0" class="sorting_1">Cash</td>
-                    <td>Cash</td>
-                    <td>110</td>
-                    <td>$10000.00</td>
-                    <td>$0.00</td>
 
+                {% for x in journals %}
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1">{{x.account_id.account_type}}</td>
+                    <td tabindex="0" class="sorting_1">{{x.account_id.account_name}}</td>
+                    <td>{{x.account_id.account_detailtype}}</td>
+                    <td>{{x.account_id.account_number}}</td>
+                    <td>${{x.debits}}</td>
+                    <td>${{x.credits}}</td>
                 </tr>
-                  <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1"><strong>2rows</strong></td>
+                {% endfor %}
+                  <tr role="row" class="odd" style="border-top: double; border-bottom: double;">
+                    <td tabindex="0" class="sorting_1"><strong>{{rowCount}}rows</strong></td>
                     <td tabindex="0" class="sorting_1"></td>
                     <td></td>
                     <td></td>
-                   <td> <strong>$20000.00</strong></td>
-                    <td><strong>$0.00</strong></td>
+                    <td> <strong>${{debitstotal}}</strong></td>
+                    <td><strong>${{creditstotal}}</strong></td>
 
                 </tr>
             </tbody>
         </table>
+        {% endif %}
     </div>
 </div>
 <script>
