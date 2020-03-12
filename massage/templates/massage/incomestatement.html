@@ -2,30 +2,98 @@
 {% block title %}
 INCOME STATEMENT
 {% endblock %}
-
 {% block pagetitle %}
 Tranquil Touch Massage
 {% endblock %}
-
 {% block pagetitlesubheading %}
 The Companys Income Statement
 {% endblock %}
-
-
 {% block reportsbtn %}
-
 {% endblock %}
-
 {% block scripts%}
+<script>
+    $(document).ready(function() {
+       loadbalance();
+   });
 
+   
+function loadincome() {
+var expense = 0.00;
+var credit = 0.00;
+'{% for x in income %}'
+
+var credit1 = '{{x.credits}}';
+credit = credit + parseFloat(credit1);
+$('#incomebody').append(
+`<tr>
+<td>{{x.account_number}}</td>
+<td>{{x.transaction_date}}</td>
+<td >$ {{x.credits}}</td>
+</tr>`
+);
+
+'{% if forloop.last %}'
+$('#incomebody').append(
+`<tr role="row" class="odd">
+    <td tabindex="0" class="sorting_1"><strong>Gross Income</strong></td>
+    <td tabindex="0" class="sorting_1"></td>
+    <td><strong><u>$ ${credit}</u></strong></td>
+</tr>`
+);
+
+'{% endif %}'
+
+'{% empty %}'
+
+
+'{% endfor %}'
+
+
+'{% for x in expenses %}'
+
+var credit2 = '{{x.credits}}';
+expense = expense + parseFloat(credit2);
+$('#expensebody').append(
+`<tr>
+<td>{{x.account_number}}</td>
+<td>{{x.transaction_date}}</td>
+<td >$ {{x.credits}}</td>
+</tr>`
+);
+
+'{% if forloop.last %}'
+$('#expensebody').append(
+`<tr role="row" class="odd">
+    <td tabindex="0" class="sorting_1"><strong>Total Expense</strong></td>
+    <td tabindex="0" class="sorting_1"></td>
+    <td><strong><u>$ ${expense}</u></strong></td>
+</tr>
+
+<tr role="row" class="odd">
+    <td tabindex="0" class="sorting_1"><strong>Net Income</strong></td>
+    <td tabindex="0" class="sorting_1"></td>
+    <td><strong style="border-bottom: double;">$ ${expense - credit}</strong></td>
+                    
+</tr>
+
+`
+);
+
+'{% endif %}'
+
+'{% empty %}'
+
+
+'{% endfor %}'
+}
+
+</script>
 {% endblock %}
-
 {% block body %}
-
 <div class="main-card mb-3 card">
     <div class="card-body table-responsive">
         <div class="row">
-            <div class="col-md-6 col-lg-6 col-sm-12">
+            <!--   <div class="col-md-6 col-lg-6 col-sm-12">
                 <p>Report Period</p>
                 <form class="needs-validation" novalidate>
                     <div class="input-group mb-3">
@@ -48,8 +116,27 @@ The Companys Income Statement
                     </div>
                     <input type="submit" value="Run Report" class="btn btn-success">
                                     </form>
-            </div>
-            <div class="col-md-6 col-lg-6 col-sm-12">
+            </div> -->
+            <div class="col-md-12 col-lg-12 col-sm-12">
+                <h4 class="text-center">SELECT JOURNAL TO REPORT</h4>
+                <form class="needs-validation" novalidate method="POST" action="{% url 'incomestatement' %}">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <select name="journs" id="" required class="custom-select">
+                            <option value="">SELECT JOURNAL</option>
+                            {% for x in Journals %}
+                            <option value="{{x.id}}">{{x.datecreated}}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please Input Journal!
+                        </div>
+                    </div>
+                    <input type="submit" value="Run Report" class="btn btn-success">
+                </form>
             </div>
         </div>
     </div>
@@ -59,82 +146,50 @@ The Companys Income Statement
         <div class="text-center">
             <h3>Tranquil Touch Massage</h3>
             <p><strong>Income Statement</strong></p>
-            <p>As of March 6, 2020</p>
+            {% if Startdate is None %}
+                {% for x in expenses %}
+                    {% if forloop.first %}
+                    <p>Journal # {{x.journalid.id}} Date: {{x.journalid.datecreated}}</p>
+                    {%endif%}
+                {% endfor %}
+            {% else %}
+            <p>As of {{Startdate}} to {{Endate}}</p>
+            {% endif %}
             <hr>
         </div>
+        {% if income.all and expenses.all %}
         <table style="width: 100%;" class="table table-sm table-hover table-striped" role="grid">
             <thead>
-            	 <tr role="row">
-                    <th><h3><strong>Revenue</strong></h3></th>
+                <tr role="row">
+                    <th>
+                        <h3><strong>Revenue</strong></h3>
+                    </th>
                     <th></th>
                     <th></th>
-                    
-                   
                 </tr>
                 <tr role="row">
                     <th>Particulars</th>
                     <th style="width: 250px;">MONTH</th>
                     <th>VALUES</th>
-                   
                 </tr>
             </thead>
-            <tbody>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Service Income</td>
-                    <td tabindex="0" class="sorting_1">March</td>
-                    <td>$1000.00</td>
-                    
-                </tr>
-
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1"><strong>Gross Income</strong></td>
-                    <td tabindex="0" class="sorting_1"></td>
-                    <td><strong><u>$1000.00</u></strong></td>
-                    
-                </tr>
-               
-               
+            <tbody id="incomebody">
             </tbody>
-
-             <thead>
-            	
-               <tr role="row">
-                    <th><h3><strong>Expenses</strong></h3></th>
+            <thead>
+                <tr role="row">
+                    <th>
+                        <h3><strong>Expenses</strong></h3>
+                    </th>
                     <th></th>
                     <th></th>
-                    
-                   
                 </tr>
             </thead>
-
-            <tbody>
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">Service Income</td>
-                    <td tabindex="0" class="sorting_1">March</td>
-                    <td>$2000.00</td>
-                    
-                </tr>
-
-                 <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1"><strong>Total Expense</strong></td>
-                    <td tabindex="0" class="sorting_1"></td>
-                    <td><strong><u>$2000.00</u></strong></td>
-                    
-                </tr>
-
-                  <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1"><strong>Net Income</strong></td>
-                    <td tabindex="0" class="sorting_1"></td>
-                    <td><strong style="border-bottom: double;">$1000.00</strong></td>
-                    
-                </tr>
-                 
+            <tbody id="expensebody">
             </tbody>
-
-
-
-
         </table>
+        {% else %}
+        <h1 class="text-center">NO DATA TO SHOW</h1>
+        {% endif %}
     </div>
 </div>
 <script>

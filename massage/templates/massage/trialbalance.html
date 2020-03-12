@@ -11,13 +11,52 @@ The Companys Trial Balance
 {% block reportsbtn %}
 {% endblock %}
 {% block scripts %}
+
+<script>
+   $(document).ready(function() {
+       loadbalance();
+   });
+function loadbalance() {
+var totalasset = 0.00;
+var debit = 0.00;
+var credit = 0.00;
+'{% for x in journals %}'
+var debit1 = '{{x.account_debbalance}}';
+var credit1 = '{{x.account_credbalance}}';
+debit = debit + parseFloat(debit1);
+credit = credit + parseFloat(credit1);
+$('#tablebody').append(
+`<tr>
+<td>{{x.account_number}}</td>
+<td>{{x.account_id_account_name}}</td>
+<td >$ {{x.account_debbalance}}</td>
+<td colspan="" rowspan="" headers="">$ {{x.account_credbalance}}</td>
+</tr>`
+);
+
+'{% if forloop.last %}'
+$('#tablebody').append(
+`<tr role="row" class="odd" style="border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Totals</strong></td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${debit}</td>
+<td colspan="" rowspan="" headers="">$${credit}</td>
+
+</tr>`
+);
+
+'{% endif %}'
+'{% endfor %}'
+}
+
+</script>
 {% endblock %}
 {% block body %}
 <div class="main-card mb-3 card">
     <div class="card-body table-responsive">
         <div class="row">
 
-            <div class="col-md-6 col-lg-6 col-sm-12">
+           <!--  <div class="col-md-6 col-lg-6 col-sm-12">
                 <h4 class="text-center">SELECT REPORT PERIOD</h4>
                 <form class="needs-validation" novalidate method="POST" action="{% url 'trialbalance' %}">
 
@@ -42,8 +81,8 @@ The Companys Trial Balance
                     </div>
                     <input type="submit" value="Run Report" class="btn btn-success">
             </form>
-            </div>
-            <div class="col-md-6 col-lg-6 col-sm-12">
+            </div> -->
+            <div class="col-md-12 col-lg-12 col-sm-12">
                 <h4 class="text-center">SELECT JOURNAL TO REPORT</h4>
                 <form class="needs-validation" novalidate method="POST" action="{% url 'trialbalance' %}">
 
@@ -86,6 +125,7 @@ The Companys Trial Balance
             {% endif %}
             <hr>
         </div>
+        {% if journals.all %}
         <table style="width: 100%;" class="table table-hover table-striped table-bordered " role="grid">
             <thead>
                 <tr role="row">
@@ -95,17 +135,12 @@ The Companys Trial Balance
                     <th style="width: 67px;">CREDIT</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for x in journals %}
-                <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1">{{x.account_id.account_number}}</td>
-                    <td tabindex="0" class="sorting_1">{{x.account_id.account_name}}</td>
-                    <td>${{x.account_debbalance}}</td>
-                    <td>${{x.account_credbalance}}</td>
-                </tr>
-                {% endfor %}
+            <tbody id="tablebody">
             </tbody>
         </table>
+        {% else %}
+<h1 class="text-center">NO DATA TO SHOW</h1>
+        {% endif %}
     </div>
 </div>
 <script>
