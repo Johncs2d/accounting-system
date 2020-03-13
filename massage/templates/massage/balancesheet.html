@@ -25,6 +25,9 @@ The Companys Balance Sheet
 var assetglobal = 0.00;
 var liabilitiesglobal = 0.00;
 var equityglobal = 0.00;
+var drawing = 0.00;
+var capital = 0.00;
+var netincome = 0.00;
 function currentasset() {
 var totalasset = 0.00;
 '{% for x in current_assets %}'
@@ -238,37 +241,63 @@ $('#noncurrentliabilitiestotal').append(
 
 function ownersequity() {
 var totalfinal = 0.00;
+var totalincome = 0.00;
+var totalexpenses = 0.00;
+
+'{% for x in income %}'
+var income = '{{x.credits}}';
+totalincome = totalincome + parseFloat(income);
+'{% endfor %}'
+
+'{% for x in expenses %}'
+var expenses = '{{x.debits}}';
+totalexpenses = totalexpenses + parseFloat(expenses);
+'{% endfor %}'
+netincome = totalincome - totalexpenses;
 
 '{% for x in ownersEquity %}'
-var debit = '{{x.account_debbalance}}';
-var credit = '{{x.account_credbalance}}';
-var total = parseFloat(credit) - parseFloat(debit);
-totalfinal = totalfinal+total;
-equityglobal = equityglobal + total;
-if (total < 0) {
-total = Math.abs(total);
-// total = "("+total.toString()+")";
+'{% if forloop.first %}'
+var debit = "{{x.account_debbalance}}";
+var credit = "{{x.account_credbalance}}";
+capital =  parseFloat(debit) - parseFloat(credit);
+capital = Math.abs(capital);
 
-}
-if (totalfinal < 0) {
-totalfinal = Math.abs(totalfinal);
-
-
-}
 $('#equitybody').append(
 `<tr>
 <td>{{x.account_id.account_name}}</td>
 <td colspan="" rowspan="" headers=""></td>
-<td>$${total}</td>
+<td>$${capital}</td>
 </tr>`
 );
+'{% endif %}'
+
+'{% if forloop.last %}'
+var debit = "{{x.account_debbalance}}";
+var credit = "{{x.account_credbalance}}";
+drawing =  parseFloat(debit) - parseFloat(credit);
+drawing = Math.abs(drawing);
+'{% endif %}'
+
+
+
+
+
+
 
 '{% if forloop.last %}'
 $('#equitytotal').append(
-`<tr role="row" class="odd" style="border-bottom: double; border-top: dashed;">
+`
+<tr role="row" class="odd">
+<td tabindex="0" class="sorting_1">Net Income</td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${netincome}</td>
+</tr>
+
+
+<tr role="row" class="odd" style="border-bottom: double; border-top: dashed;">
 <td tabindex="0" class="sorting_1"><strong>Total Share Holders Equity</strong></td>
 <td colspan="" rowspan="" headers=""></td>
-<td>$${totalfinal}</td>
+<td>$${(capital-drawing)+netincome}</td>
 </tr>`
 );
 
@@ -318,7 +347,7 @@ $('#finaltotal').append(
 `<tr role="row" class="odd" style="border-bottom: double;">
 <td tabindex="0" class="sorting_1"><strong>Total Liabilities & Owners Equity</strong></td>
 <td colspan="" rowspan="" headers=""></td>
-<td>$${liabilitiesglobal + equityglobal}</td>
+<td>$${liabilitiesglobal + (capital-drawing)+netincome}</td>
 </tr>`
 );
 
@@ -334,10 +363,11 @@ $('#check').append(
                 </tr>
                 <tr>
                     <td>
-                        Check
+                        <p style="color:red"><strong>Check</strong></p>
                     </td>
                     <td>
-                       ${assetglobal-(liabilitiesglobal + equityglobal)}
+                    <p style="color:red"><strong> ${assetglobal-((capital-drawing)+(netincome+liabilitiesglobal))}</strong></p>
+                      
                     </td>
                     <td></td>
                 </tr>
@@ -421,7 +451,7 @@ $('#check').append(
             {% endif %}
             <hr>
         </div>
-        {% if current_assets.all and nonCurrent_assets.all and current_liabilities.all and nonCurrent_liabilities.all and ownersequity.all %}
+        {% if current_assets.all or nonCurrent_assets.all or current_liabilities.all or nonCurrent_liabilities.all or ownersequity.all %}
         <table style="width: 100%;" class="table table-sm table-hover table-striped" role="grid">
             <thead>
                 <tr role="row">

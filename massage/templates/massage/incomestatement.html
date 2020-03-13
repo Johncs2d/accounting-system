@@ -13,7 +13,7 @@ The Companys Income Statement
 {% block scripts%}
 <script>
     $(document).ready(function() {
-       loadbalance();
+       loadincome();
    });
 
    
@@ -26,7 +26,7 @@ var credit1 = '{{x.credits}}';
 credit = credit + parseFloat(credit1);
 $('#incomebody').append(
 `<tr>
-<td>{{x.account_number}}</td>
+<td>{{x.account_id.account_name}}</td>
 <td>{{x.transaction_date}}</td>
 <td >$ {{x.credits}}</td>
 </tr>`
@@ -51,13 +51,13 @@ $('#incomebody').append(
 
 '{% for x in expenses %}'
 
-var credit2 = '{{x.credits}}';
+var credit2 = '{{x.debits}}';
 expense = expense + parseFloat(credit2);
 $('#expensebody').append(
 `<tr>
-<td>{{x.account_number}}</td>
+<td>{{x.account_id.account_name}}</td>
 <td>{{x.transaction_date}}</td>
-<td >$ {{x.credits}}</td>
+<td >$ {{x.debits}}</td>
 </tr>`
 );
 
@@ -72,7 +72,7 @@ $('#expensebody').append(
 <tr role="row" class="odd">
     <td tabindex="0" class="sorting_1"><strong>Net Income</strong></td>
     <td tabindex="0" class="sorting_1"></td>
-    <td><strong style="border-bottom: double;">$ ${expense - credit}</strong></td>
+    <td><strong style="border-bottom: double;">$ ${credit - expense}</strong></td>
                     
 </tr>
 
@@ -157,7 +157,8 @@ $('#expensebody').append(
             {% endif %}
             <hr>
         </div>
-        {% if income.all and expenses.all %}
+        {% if income.all or expenses.all %}
+
         <table style="width: 100%;" class="table table-sm table-hover table-striped" role="grid">
             <thead>
                 <tr role="row">

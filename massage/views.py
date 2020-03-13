@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import login, authenticate
 from django.db import connection, IntegrityError
 from django.utils.html import strip_tags
+from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count, Case, When, IntegerField, Q, F, Value
@@ -29,7 +30,7 @@ def charts(request):
 	context = {"chart": chartofaccounts.objects.all()}
 	return render(request, "massage/chartsofaccounts.html",context)
 
- #INSERT ACCOUNTS
+#INSERT ACCOUNTS
 def insertaccount(request):
 
 	accountnumber = strip_tags(request.POST["number"])
@@ -89,12 +90,12 @@ def trialbalance(request):
 								"Journals": journalmain.objects.all(),
 								"signs": 'True'}
 				else:
-
 					journs = request.POST.get("journs",False)
+					context = {
+					"journals": journalTotals.objects.filter(journalid__id=journs).order_by('account_id__account_number'),
 
-					context = {"journals": journalTotals.objects.filter(journalid__id=journs).order_by('account_id__account_number'),
-							   "Journals": journalmain.objects.all(),
-							   "signs": 'True'}
+
+					"Journals": journalmain.objects.all(),"signs": 'True'}
 
 
 
@@ -263,15 +264,6 @@ def balancesheet(request):
 								transaction_date__lte=newend).filter(account_id__account_type="Owner's equity")\
 								.order_by('account_id__account_number')
 
-					expenses = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type="Expenses")\
-								.order_by('account_id__account_number')
-
-					income = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type="Income")\
-								.order_by('account_id__account_number')			
-					
-
 					context = {	"current_assets":current_assets,
 								"nonCurrent_assets":nonCurrent_assets,
 								"current_liabilities":current_liabilities,
@@ -301,10 +293,18 @@ def balancesheet(request):
 					ownersEquity = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type="Owner's equity")\
 								.order_by('account_id__account_number')
 
+					expenses = journalcollections.objects.filter(journalid__id=journs).filter(account_id__account_type="Expenses")\
+								.order_by('account_id__account_number')
+
+					income = journalcollections.objects.filter(journalid__id=journs).filter(account_id__account_type="Income")\
+								.order_by('account_id__account_number')
+
 
 					context = {	"current_assets":current_assets,
 								"nonCurrent_assets":nonCurrent_assets,
 								"current_liabilities":current_liabilities,
+								"income":income,
+								"expenses":expenses,
 								"nonCurrent_liabilities":nonCurrent_liabilities,
 								"ownersEquity":ownersEquity,
 								"Journals": journalList,
@@ -395,14 +395,11 @@ def inserjournal(request):
 
 	data1 = request.POST["json"]
 
-	f = open(path, 'w')
-
-	f.write(data1)
-
-	f.close()
+	with open(path, 'w') as data_file:
+		data_file.write(data1)
+		data_file.close()
 
 	create = journalmain()
-
 	create.save()
 
 	with open(path) as data_file:
@@ -441,7 +438,7 @@ def inserjournal(request):
 
 			chartofaccs = chartofaccounts.objects.get(account_number=int(x['accnum']))
 
-			obj, created = journalTotals.objects.update_or_create(
+			journalTotals.objects.update_or_create(
 			account_id=chartofaccs,journalid=create,
 			defaults={'account_number':x['accnum'],
 			'account_debbalance': decimal.Decimal(totals3['totaldebs'])+decimal.Decimal(x['deb']),
