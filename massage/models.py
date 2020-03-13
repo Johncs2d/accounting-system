@@ -62,6 +62,7 @@ class companyInfo(models.Model):
 				{self.company_country} | {self.company_city} | {self.company_state} | {self.company_zip}"
 
 class journalmain(models.Model):
+	monthof = models.DateField(("Date"))
 	datecreated = models.DateField(("Date"), default=date.today)
 	def __str__(self):
 		return f"Journal ID {self.pk} | Date Created {self.datecreated}"

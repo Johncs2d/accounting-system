@@ -1,0 +1,107 @@
+'{% if forloop.first %}'
+
+'{% endif %}'
+
+'{% if forloop.last %}'
+
+'{% endif %}'
+
+
+KEYWORD 0001
+
+'{% if forloop.last %}'
+$('#equitytotal').append(
+`
+<tr role="row" class="odd">
+<td tabindex="0" class="sorting_1">Net Income</td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${netincome}</td>
+</tr>
+
+
+<tr role="row" class="odd" style="border-bottom: double; border-top: dashed;">
+<td tabindex="0" class="sorting_1"><strong>Total Share Holders Equity</strong></td>
+<td colspan="" rowspan="" headers=""></td>
+<td>$${(capital-drawing)+netincome}</td>
+</tr>`
+);
+
+'{% endif %}'
+
+KEYWORD 0001 END
+
+
+
+KEY 0002
+
+journalList = journalmain.objects.all()
+				startdate = request.POST.get("startdate",False)
+				enddate = request.POST.get("enddate",False)
+				print(startdate)
+				print(enddate)
+				if startdate is not False:
+					
+					starttime = datetime.strptime(startdate,'%m/%d/%Y')
+
+					endtime = datetime.strptime(enddate,'%m/%d/%Y')
+
+					newstart = starttime.strftime('%Y-%m-%d')
+
+					newend = endtime.strftime('%Y-%m-%d')
+
+					current_assets = journalcollections.objects.filter(transaction_date__gte=newstart,
+								transaction_date__lte=newend).filter(account_id__account_type='Current assets')\
+								.order_by('account_id__account_number')
+
+					# current_assets_total = journalcollections.objects.filter(transaction_date__gte=newstart,
+					# 			transaction_date__lte=newend).filter(account_id__account_type='Current assets')\
+					# 			.annotate(totalcurrentAssets=F('debits') - F('credits')).first()
+
+					nonCurrent_assets = journalcollections.objects.filter(transaction_date__gte=newstart,
+								transaction_date__lte=newend).filter(Q(account_id__account_type='Fixed assets')\
+								|Q(account_id__account_type='Non-current assets')).order_by('account_id__account_number')
+					
+					current_liabilities = journalcollections.objects.filter(transaction_date__gte=newstart,
+								transaction_date__lte=newend).filter(account_id__account_type='Current liabilities')\
+								.order_by('account_id__account_number')
+
+					nonCurrent_liabilities = journalcollections.objects.filter(transaction_date__gte=newstart,
+								transaction_date__lte=newend).filter(account_id__account_type='Non-current liabilities')\
+								.order_by('account_id__account_number')			
+					
+					ownersequity = journalcollections.objects.filter(transaction_date__gte=newstart,
+								transaction_date__lte=newend).filter(account_id__account_type="Owner's equity")\
+								.order_by('account_id__account_number')
+
+					context = {	"current_assets":current_assets,
+								"nonCurrent_assets":nonCurrent_assets,
+								"current_liabilities":current_liabilities,
+								"nonCurrent_liabilities":nonCurrent_liabilities,
+								"ownersequity":ownersequity,
+								"Startdate":startdate,
+								"Endate":enddate,
+								"Journals": journalList,
+								"signs": 'True'
+								}
+				else:
+KEY 002 END
+
+KEY 003
+
+
+				startdate = request.POST.get("startdate",False)
+				enddate = request.POST.get("enddate",False)
+
+				if startdate is not False:
+					
+					starttime = datetime.strptime(startdate,'%m/%d/%Y')
+
+					endtime = datetime.strptime(enddate,'%m/%d/%Y')
+
+					newstart = starttime.strftime('%Y-%m-%d')
+
+					newend = endtime.strftime('%Y-%m-%d')
+
+				else:
+
+KEY 003 END

@@ -215,90 +215,39 @@ def ledger(request):
 
 
 def balancesheet(request):
-
-	context = {"Journals": journalmain.objects.all(),
+	journalList = journalmain.objects.all()
+	context = {"Journals": journalList,
 			   }
 	if request.user.is_authenticated:
 
 		if request.method == "POST":
 
-			
-			
 			try:
-				journalList = journalmain.objects.all()
-				startdate = request.POST.get("startdate",False)
-				enddate = request.POST.get("enddate",False)
-				print(startdate)
-				print(enddate)
-				if startdate is not False:
-					
-					starttime = datetime.strptime(startdate,'%m/%d/%Y')
-
-					endtime = datetime.strptime(enddate,'%m/%d/%Y')
-
-					newstart = starttime.strftime('%Y-%m-%d')
-
-					newend = endtime.strftime('%Y-%m-%d')
-
-					current_assets = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type='Current assets')\
-								.order_by('account_id__account_number')
-
-					# current_assets_total = journalcollections.objects.filter(transaction_date__gte=newstart,
-					# 			transaction_date__lte=newend).filter(account_id__account_type='Current assets')\
-					# 			.annotate(totalcurrentAssets=F('debits') - F('credits')).first()
-
-					nonCurrent_assets = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(Q(account_id__account_type='Fixed assets')\
-								|Q(account_id__account_type='Non-current assets')).order_by('account_id__account_number')
-					
-					current_liabilities = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type='Current liabilities')\
-								.order_by('account_id__account_number')
-
-					nonCurrent_liabilities = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type='Non-current liabilities')\
-								.order_by('account_id__account_number')			
-					
-					ownersequity = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type="Owner's equity")\
-								.order_by('account_id__account_number')
-
-					context = {	"current_assets":current_assets,
-								"nonCurrent_assets":nonCurrent_assets,
-								"current_liabilities":current_liabilities,
-								"nonCurrent_liabilities":nonCurrent_liabilities,
-								"ownersequity":ownersequity,
-								"Startdate":startdate,
-								"Endate":enddate,
-								"Journals": journalList,
-								"signs": 'True'
-								}
-				else:
-
+#KEY 0002
+#KEY 0002 END
 					journs = request.POST.get("journs",False)
 
-					current_assets = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type='Current assets')\
-								.order_by('account_id__account_number')
+					current_assets = journalTotals.objects.filter(journalid__id=journs).filter(\
+						account_id__account_type='Current assets').order_by('account_id__account_number')
 
-					nonCurrent_assets = journalTotals.objects.filter(journalid__id=journs).filter(Q(account_id__account_type='Fixed assets')\
-								|Q(account_id__account_type='Non-current assets')).order_by('account_id__account_number')
+					nonCurrent_assets = journalTotals.objects.filter(journalid__id=journs).filter(Q(\
+						account_id__account_type='Fixed assets')|Q(account_id__account_type='Non-current assets'))\
+						.order_by('account_id__account_number')
 					
-					current_liabilities = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type='Current liabilities')\
-								.order_by('account_id__account_number')
+					current_liabilities = journalTotals.objects.filter(journalid__id=journs).filter(\
+						account_id__account_type='Current liabilities').order_by('account_id__account_number')
 
-					nonCurrent_liabilities = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type='Non-current liabilities')\
-								.order_by('account_id__account_number')			
+					nonCurrent_liabilities = journalTotals.objects.filter(journalid__id=journs).filter(\
+						account_id__account_type='Non-current liabilities').order_by('account_id__account_number')			
 					
-					ownersEquity = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type="Owner's equity")\
-								.order_by('account_id__account_number')
+					ownersEquity = journalTotals.objects.filter(journalid__id=journs).filter(\
+						account_id__account_type="Owner's equity").order_by('account_id__account_number')
 
-					expenses = journalcollections.objects.filter(journalid__id=journs).filter(account_id__account_type="Expenses")\
-								.order_by('account_id__account_number')
+					expenses = journalcollections.objects.filter(journalid__id=journs).filter(\
+						account_id__account_type="Expenses").order_by('account_id__account_number')
 
-					income = journalcollections.objects.filter(journalid__id=journs).filter(account_id__account_type="Income")\
-								.order_by('account_id__account_number')
-
+					income = journalcollections.objects.filter(journalid__id=journs).filter(\
+						account_id__account_type="Income").order_by('account_id__account_number')
 
 					context = {	"current_assets":current_assets,
 								"nonCurrent_assets":nonCurrent_assets,
@@ -310,8 +259,7 @@ def balancesheet(request):
 								"Journals": journalList,
 								"signs": 'True'
 								}
-
-				return render(request,"massage/balancesheet.html",context)
+					return render(request,"massage/balancesheet.html",context)
 
 			except ObjectDoesNotExist:
 
@@ -322,72 +270,55 @@ def balancesheet(request):
 	else:
 		return HttpResponseRedirect(reverse("index"))
 
+
+
 def incomestatement(request):
 	journalList = journalmain.objects.all()
-	context = {"Journals": journalList,
-			   }
+	context = {"Journals": journalList,}
 	if request.user.is_authenticated:
 
 		if request.method == "POST":
 
-			
-			
 			try:
-				
-				startdate = request.POST.get("startdate",False)
-				enddate = request.POST.get("enddate",False)
+				journs = request.POST.get("journs",False)
 
-				if startdate is not False:
-					
-					starttime = datetime.strptime(startdate,'%m/%d/%Y')
+				expenses = journalcollections.objects.filter(journalid__id=journs).filter(\
+						account_id__account_type="Expenses").order_by('account_id__account_number')
 
-					endtime = datetime.strptime(enddate,'%m/%d/%Y')
+				income = journalcollections.objects.filter(journalid__id=journs).filter(\
+						account_id__account_type="Income").order_by('account_id__account_number')		
 
-					newstart = starttime.strftime('%Y-%m-%d')
-
-					newend = endtime.strftime('%Y-%m-%d')
-
-				else:
-					journs = request.POST.get("journs",False)
-
-
-					expenses = journalcollections.objects.filter(journalid__id=journs).filter(account_id__account_type="Expenses")\
-								.order_by('account_id__account_number')
-
-					income = journalcollections.objects.filter(journalid__id=journs).filter(account_id__account_type="Income")\
-								.order_by('account_id__account_number')		
-
-					context = {	"income":income,
-								"expenses":expenses,
-								"Journals": journalList,
-								"signs": 'True'
-								}
-
+				context = {	"income":income,"expenses":expenses,"Journals": journalList,"signs": 'True'}
 				return render(request,"massage/incomestatement.html",context)
 
 			except ObjectDoesNotExist:
-
 				return render(request,"massage/incomestatement.html",context)
 
 		else:
 			return render(request,"massage/incomestatement.html",context)
+
 	else:
 		return HttpResponseRedirect(reverse("index"))
 
 
 def receive(request):
 	return render(request,"massage/receive.html")
-	#JOURNALIZE
+
+
+#JOURNALIZE
 def journalize(request):
 	try:
 		maxid = journalmain.objects.all().order_by("-id")[0]
+
 	except IndexError:
 		 maxid = 1
-	context = {"chart": chartofaccounts.objects.all(),
-			   "maxid": maxid
-			   }
+
+	context = {"chart": chartofaccounts.objects.all(),"maxid": maxid}
+
 	return render(request,"massage/journal.html",context)
-	#INSERT JOURNAL
+
+
+#INSERT JOURNAL
 def inserjournal(request):
 	base = 0.00
 
@@ -407,6 +338,14 @@ def inserjournal(request):
 		data = json.load(data_file)
 
 		for x in data:
+
+			accounttotalcred = chartofaccounts.objects.filter(account_id__account_number=int(x['accnum']),
+			journalid=create.id).aggregate(totalcreds=Sum('account_credbalance'))
+
+
+			accounttotaldeb = chartofaccounts.objects.filter(account_id__account_number=int(x['accnum']),
+			journalid=create.id).aggregate(totaldebs=Sum('account_debbalance'))
+
 
 			totals1 = journalcollections.objects.filter(account_id__account_number=int(x['accnum']),
 			journalid=create.id).aggregate(totalcreds=Sum('account_id__account_credbalance'))
@@ -445,10 +384,10 @@ def inserjournal(request):
 			'account_credbalance': decimal.Decimal(totals4['totalcreds'])+decimal.Decimal(x['cred'])},)
 			
 			chartofaccounts.objects.filter(account_number=int(x['accnum'])).update(
-			account_debbalance=decimal.Decimal(totals2['totaldebs'])+decimal.Decimal(x['deb']))
+			account_debbalance=decimal.Decimal(accounttotaldeb['totaldebs'])+decimal.Decimal(x['deb']))
 			
 			chartofaccounts.objects.filter(account_number=int(x['accnum'])).update(
-			account_credbalance=decimal.Decimal(totals1['totalcreds'])+decimal.Decimal(x['cred']))
+			account_credbalance=decimal.Decimal(accounttotalcred['totalcreds'])+decimal.Decimal(x['cred']))
 			
 			add = journalcollections(transaction_date=newformat,account_id=chartofaccs,debits=float(x['deb']),
 			credits=float(x['cred']),description=x['des'],journalid=create)
