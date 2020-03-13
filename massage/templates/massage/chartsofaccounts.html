@@ -61,7 +61,7 @@ function addaccount() {
              <option value="Non-current liabilities">Non-current liabilities</option>
              <option value="Owner's equity">Owner's equity</option>
              <option value="Expenses">Expenses</option>
-             <option value="Other income">Other income</option>
+             <option value="Income">Income</option>
              </select>
              <input type="text" placeholder="Detail Type" class="swal2-input" id="detailed">`,
         focusConfirm: false,
@@ -96,6 +96,7 @@ function addaccount() {
                     <td>${type}</td>
                     <td>${detail}</td>
                     <td>$0</td>
+                    <td>$0</td>
                    
                     
                     </tr>`);
@@ -106,6 +107,7 @@ function addaccount() {
                             showConfirmButton: false,
                             timer: 1500
                         })
+                        addaccount();
                     })
                     .fail(function(data) {
                         Swal.fire({

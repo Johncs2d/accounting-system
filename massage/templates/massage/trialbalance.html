@@ -20,17 +20,21 @@ function loadbalance() {
 var totalasset = 0.00;
 var debit = 0.00;
 var credit = 0.00;
+var totals = 0.00;
 '{% for x in journals %}'
 var debit1 = '{{x.account_debbalance}}';
 var credit1 = '{{x.account_credbalance}}';
+var total1 = '{{x.account_credbalance}}';
 debit = debit + parseFloat(debit1);
 credit = credit + parseFloat(credit1);
+totals = totals + parseFloat(total1);
 $('#tablebody').append(
 `<tr>
 <td>{{x.account_number}}</td>
-<td>{{x.account_id_account_name}}</td>
+<td>{{x.account_id.account_name}}</td>
 <td >$ {{x.account_debbalance}}</td>
 <td colspan="" rowspan="" headers="">$ {{x.account_credbalance}}</td>
+<td colspan="" rowspan="" headers="">$ {{x.totals}}</td>
 </tr>`
 );
 
@@ -41,7 +45,7 @@ $('#tablebody').append(
 <td colspan="" rowspan="" headers=""></td>
 <td>$${debit}</td>
 <td colspan="" rowspan="" headers="">$${credit}</td>
-
+<td colspan="" rowspan="" headers="">$${totals}</td>
 </tr>`
 );
 
@@ -126,6 +130,7 @@ $('#tablebody').append(
             <hr>
         </div>
         {% if journals.all %}
+
         <table style="width: 100%;" class="table table-hover table-striped table-bordered " role="grid">
             <thead>
                 <tr role="row">
@@ -133,11 +138,14 @@ $('#tablebody').append(
                     <th style="width: 157px;">PARTICULARS</th>
                     <th style="width: 67px;">DEBIT</th>
                     <th style="width: 67px;">CREDIT</th>
+                    <th style="width: 67px;">BALANCE</th>
                 </tr>
             </thead>
             <tbody id="tablebody">
             </tbody>
         </table>
+
+       
         {% else %}
 <h1 class="text-center">NO DATA TO SHOW</h1>
         {% endif %}

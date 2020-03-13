@@ -1,1 +1,4 @@
 *.pyc
+*.pyc
+*.json
+*.sqlite3

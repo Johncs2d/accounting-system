@@ -19,8 +19,8 @@ class chartofaccounts(models.Model):
 	account_name = models.CharField(max_length=100,unique=True)
 	account_type = models.CharField(max_length=100,choices = typeschoices)
 	account_detailtype = models.CharField(max_length=100)
-	account_debbalance = models.DecimalField(max_digits = 12, decimal_places = 2)
-	account_credbalance = models.DecimalField(max_digits = 12, decimal_places = 2)
+	account_debbalance = models.DecimalField(max_digits = 30, decimal_places = 2)
+	account_credbalance = models.DecimalField(max_digits = 30, decimal_places = 2)
 
 	def __str__(self):
 		return f"Account Number: {self.account_number} | Account Name: {self.account_name} | Account Type: {self.account_type} | \
@@ -39,7 +39,7 @@ class serviceInfo(models.Model):
 	service_category =  models.ForeignKey(service_category,on_delete=models.PROTECT,null=True, 
 											related_name="service_category")
 	service_description = models.CharField(max_length=100)
-	service_price = models.DecimalField(max_digits = 12, decimal_places = 2)
+	service_price = models.DecimalField(max_digits = 30, decimal_places = 2)
 	service_income_account = models.ForeignKey(chartofaccounts,on_delete=models.PROTECT,
 		null=False,related_name="income_account")
 	def __str__(self):
@@ -70,13 +70,13 @@ class journalcollections(models.Model):
 	transaction_date = models.DateField(("Date"), null=False)
 	account_id = models.ForeignKey(chartofaccounts,on_delete=models.PROTECT,null=True,
 									related_name="journal_account")
-	debits = models.DecimalField(max_digits = 12, decimal_places = 2)
-	credits = models.DecimalField(max_digits = 12, decimal_places = 2)
+	debits = models.DecimalField(max_digits = 30, decimal_places = 2)
+	credits = models.DecimalField(max_digits = 30, decimal_places = 2)
 	description = models.CharField(max_length=200)
 	journalid = models.ForeignKey(journalmain,on_delete=models.PROTECT,null=False,related_name="journals")
 	def __str__(self):
 		return f"{self.transaction_date} | {self.account_id}  | $ {self.debits} | $ \
-				{self.credits} | {self.description} | Journal #{self.journalid.id} "
+				{self.credits} | {self.description} | Journal #{self.journalid.id}"
 
 
 
@@ -92,8 +92,8 @@ class logs(models.Model):
 	event_name = models.CharField(max_length=100)
 	account_involved = models.ForeignKey(chartofaccounts,on_delete=models.PROTECT,
 										null=True,related_name="logs_account")
-	amount = models.DecimalField(max_digits = 12, decimal_places = 2)
-	newbalance = models.DecimalField(max_digits = 12, decimal_places = 2)
+	amount = models.DecimalField(max_digits = 30, decimal_places = 2)
+	newbalance = models.DecimalField(max_digits = 30, decimal_places = 2)
 	date = models.DateField(("Date"), default=date.today)
 	def __str__(self):
 		return f"{self.event_name} | {self.account_involved} | {self.amount} | {self.newbalance} | {self.date}"
@@ -103,8 +103,18 @@ class journalTotals(models.Model):
 	account_id = models.ForeignKey(chartofaccounts,on_delete=models.PROTECT,null=True,
 									related_name="totals_account")
 	account_number = models.IntegerField()
-	account_debbalance = models.DecimalField(max_digits = 12, decimal_places = 2)
-	account_credbalance = models.DecimalField(max_digits = 12, decimal_places = 2)
+	account_debbalance = models.DecimalField(max_digits = 30, decimal_places = 2)
+	account_credbalance = models.DecimalField(max_digits = 30, decimal_places = 2)
 	def __str__(self):
-		return f"{self.journalid.id} || {self.account_id.account_number} || {self.account_number} || {self.account_debbalance} || {self.account_credbalance}"
-		
+		return f"{self.journalid.id} || {self.account_id.account_number} || {self.account_number} || {self.account_debbalance} || {self.account_credbalance} {self.totals()}"
+	def totals(self):
+		return abs(self.account_debbalance - self.account_credbalance)
+	# def ownersequity(self):
+	# 	expense = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type="Expenses")\
+	# 							.order_by('account_id__account_number')
+
+	# 	income = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type="Income")\
+	# 							.order_by('account_id__account_number')
+
+	# 	ownersequity = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type="Owner's equity")\
+	# 							.filter(account_id__account_number=310).aggregate(totalownersequity=Sum('account_credbalance'))
