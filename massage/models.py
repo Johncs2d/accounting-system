@@ -8,7 +8,6 @@ from datetime import date
 class chartofaccounts(models.Model):
 	typeschoices = (
 		("Current assets", "Current assets"),
-		("Fixed assets", "Fixed assets"),
 		("Non-current assets", "Non-current assets"),
 		("Current liabilities", "Current liabilities"),
 		("Non-current liabilities", "Non-current liabilities"),
@@ -107,9 +106,7 @@ class journalTotals(models.Model):
 	account_debbalance = models.DecimalField(max_digits = 30, decimal_places = 2)
 	account_credbalance = models.DecimalField(max_digits = 30, decimal_places = 2)
 	def __str__(self):
-		return f"{self.journalid.id} || {self.account_id.account_number} || {self.account_number} || {self.account_debbalance} || {self.account_credbalance} {self.totals()}"
-	def totals(self):
-		return abs(self.account_debbalance - self.account_credbalance)
+		return f"{self.journalid.id} || {self.account_id.account_number} || {self.account_number} || {self.account_debbalance} || {self.account_credbalance}"
 	# def ownersequity(self):
 	# 	expense = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type="Expenses")\
 	# 							.order_by('account_id__account_number')

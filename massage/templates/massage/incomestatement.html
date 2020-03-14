@@ -11,112 +11,11 @@ The Companys Income Statement
 {% block reportsbtn %}
 {% endblock %}
 {% block scripts%}
-<script>
-    $(document).ready(function() {
-       loadincome();
-   });
-
-   
-function loadincome() {
-var expense = 0.00;
-var credit = 0.00;
-'{% for x in income %}'
-
-var credit1 = '{{x.credits}}';
-credit = credit + parseFloat(credit1);
-$('#incomebody').append(
-`<tr>
-<td>{{x.account_id.account_name}}</td>
-<td>{{x.transaction_date}}</td>
-<td >$ {{x.credits}}</td>
-</tr>`
-);
-
-'{% if forloop.last %}'
-$('#incomebody').append(
-`<tr role="row" class="odd">
-    <td tabindex="0" class="sorting_1"><strong>Gross Income</strong></td>
-    <td tabindex="0" class="sorting_1"></td>
-    <td><strong><u>$ ${credit}</u></strong></td>
-</tr>`
-);
-
-'{% endif %}'
-
-'{% empty %}'
-
-
-'{% endfor %}'
-
-
-'{% for x in expenses %}'
-
-var credit2 = '{{x.debits}}';
-expense = expense + parseFloat(credit2);
-$('#expensebody').append(
-`<tr>
-<td>{{x.account_id.account_name}}</td>
-<td>{{x.transaction_date}}</td>
-<td >$ {{x.debits}}</td>
-</tr>`
-);
-
-'{% if forloop.last %}'
-$('#expensebody').append(
-`<tr role="row" class="odd">
-    <td tabindex="0" class="sorting_1"><strong>Total Expense</strong></td>
-    <td tabindex="0" class="sorting_1"></td>
-    <td><strong><u>$ ${expense}</u></strong></td>
-</tr>
-
-<tr role="row" class="odd">
-    <td tabindex="0" class="sorting_1"><strong>Net Income</strong></td>
-    <td tabindex="0" class="sorting_1"></td>
-    <td><strong style="border-bottom: double;">$ ${credit - expense}</strong></td>
-                    
-</tr>
-
-`
-);
-
-'{% endif %}'
-
-'{% empty %}'
-
-
-'{% endfor %}'
-}
-
-</script>
 {% endblock %}
 {% block body %}
 <div class="main-card mb-3 card">
     <div class="card-body table-responsive">
         <div class="row">
-            <!--   <div class="col-md-6 col-lg-6 col-sm-12">
-                <p>Report Period</p>
-                <form class="needs-validation" novalidate>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" required placeholder="Starting date" data-toggle="datepicker-year">
-                        <div class="valid-feedback">
-                            Looks good!
-                        </div>
-                        <div class="invalid-feedback">
-                            Please Input Starting Date!
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" required placeholder="End date" data-toggle="datepicker-year">
-                        <div class="valid-feedback">
-                            Looks good!
-                        </div>
-                        <div class="invalid-feedback">
-                            Please Input End Date!
-                        </div>
-                    </div>
-                    <input type="submit" value="Run Report" class="btn btn-success">
-                                    </form>
-            </div> -->
             <div class="col-md-12 col-lg-12 col-sm-12">
                 <h4 class="text-center">SELECT JOURNAL TO REPORT</h4>
                 <form class="needs-validation" novalidate method="POST" action="{% url 'incomestatement' %}">
@@ -125,7 +24,7 @@ $('#expensebody').append(
                         <select name="journs" id="" required class="custom-select">
                             <option value="">SELECT JOURNAL</option>
                             {% for x in Journals %}
-                            <option value="{{x.id}}">{{x.datecreated}}</option>
+                            <option value="{{x.id}}">{{x.monthof}}</option>
                             {% endfor %}
                         </select>
                         <div class="valid-feedback">
@@ -149,7 +48,7 @@ $('#expensebody').append(
             {% if Startdate is None %}
                 {% for x in expenses %}
                     {% if forloop.first %}
-                    <p>Journal # {{x.journalid.id}} Date: {{x.journalid.datecreated}}</p>
+                    <p>Journal # {{x.journalid.id}} Date: {{x.journalid.monthof}}</p>
                     {%endif%}
                 {% endfor %}
             {% else %}
@@ -175,6 +74,22 @@ $('#expensebody').append(
                 </tr>
             </thead>
             <tbody id="incomebody">
+
+                {% for x in income %}
+
+                <tr>
+                    <td>{{x.account_id.account_name}}</td>
+                    <td>{{x.transaction_date}}</td>
+                    <td >$ {{x.credits}}</td>
+                </tr>
+                {% endfor %}
+
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1"><strong>Gross Income</strong></td>
+                    <td tabindex="0" class="sorting_1"></td>
+                    <td><strong><u>${{incomecr}}</u></strong></td>
+                </tr>
+
             </tbody>
             <thead>
                 <tr role="row">
@@ -186,6 +101,26 @@ $('#expensebody').append(
                 </tr>
             </thead>
             <tbody id="expensebody">
+                {% for x in expenses %}
+                <tr>
+                    <td>{{x.account_id.account_name}}</td>
+                    <td>{{x.transaction_date}}</td>
+                    <td>${{x.debits}}</td>
+                </tr>
+                {% endfor %}
+
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1"><strong>Total Expense</strong></td>
+                    <td tabindex="0" class="sorting_1"></td>
+                    <td><strong><u>${{expensedr}}</u></strong></td>
+                </tr>
+
+                <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1"><strong>Net Income</strong></td>
+                    <td tabindex="0" class="sorting_1"></td>
+                    <td><strong style="border-bottom: double;">${{netincome}}</strong></td>
+                </tr>
+
             </tbody>
         </table>
         {% else %}

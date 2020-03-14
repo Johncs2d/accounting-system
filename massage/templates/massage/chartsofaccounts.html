@@ -71,9 +71,54 @@ function addaccount() {
         confirmButtonText: "INSERT",
 
         preConfirm: () => {
+
+
             if (document.getElementById('accnum').value && document.getElementById('accname').value &&
                 document.getElementById('type').value && document.getElementById('detailed').value) {
-                let number = $("#accnum").val();
+
+                if($("#accnum").val() < 200 && $("#accnum").val() > 1 && ($("#type").val() != 'Current assets' || $("#type").val() !== 'Fixed assets' || $("#type").val() != 'Non-current assets')){
+
+                     Swal.showValidationMessage('Invalid Account Number or Type');
+                     console.log("1")
+
+                }
+
+                else if($("#accnum").val() < 300 && $("#accnum").val() > 199 && ($("#type").val() !== 'Current liabilities' || $("#type").val() != 'Non-current liabilities')){
+
+                    Swal.showValidationMessage('Invalid Account Number or Type');
+                    console.log("2")
+                }
+
+                  else if($("#accnum").val() < 400 && $("#accnum").val() > 299 && ($("#type").val() !== "Owner's equity")){
+                    
+                    Swal.showValidationMessage('Invalid Account Number or Type');
+                    console.log("3")
+
+                }
+
+                 else if($("#accnum").val() < 500 && $("#accnum").val() > 399 && ($("#type").val() !== "Income")){
+                    
+                    Swal.showValidationMessage('Invalid Account Number or Type');
+                    console.log("4")
+
+                }
+
+
+                else if($("#accnum").val() < 600 && $("#accnum").val() > 499 && ($("#type").val() !== "Expenses")){
+                    
+                    Swal.showValidationMessage('Invalid Account Number or Type');
+                    console.log("5")
+
+                }
+
+                else if ($("#accnum").val() > 599){
+                    Swal.showValidationMessage('Invalid Account Number or Type');
+                    console.log("5")
+                    
+                }
+
+                else{
+                        let number = $("#accnum").val();
                 let name = $("#accname").val();
                 let type = $("#type").val();
                 let detail = $("#detailed").val();
@@ -118,6 +163,11 @@ function addaccount() {
                         })
                     })
 
+                }
+
+
+                
+
             } else {
                 if (!$("#accnum").val()) {
                     Swal.showValidationMessage('Account Number Cannot Be Empty');
@@ -130,6 +180,8 @@ function addaccount() {
                 } else {
                     Swal.showValidationMessage('Inputs Cannot Be Empty')
                 }
+
+
 
             }
         },

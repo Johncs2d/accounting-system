@@ -117,6 +117,12 @@ else {
         })();
 
 $('#submit-table').click( function() {
+
+
+    if (!$("#BASEDATE").val()) {
+alert("PLEASE INPUT JOURNAL DATE");
+    }
+    else{
     // Convert the table into a javascript object
     var table = $('#journaltable').tableToJSON({ignoreColumns: [6]}); 
     table1 = JSON.stringify(table);
@@ -136,9 +142,9 @@ function change() {
     });
 }    
     $.ajax({
-        url: "/inserjournal",
+        url:"{% url 'inserjournal' %}",
         type: 'POST',
-        data: {json: table1,},
+        data: {json: table1,basedate:$("#BASEDATE").val(),},
         })
     .done(function(data) {
         Swal.fire({
@@ -161,6 +167,7 @@ function change() {
         footer: '<a href>Why do I have this issue?</a>'
         })
         })
+    }
     });
 </script>
 
@@ -169,7 +176,7 @@ function change() {
 {% block body %}
 <div class="main-card mb-3 card">
     <div class="card-body" id="loadingbody">
-        <h1 class="text-center" id="textloading">STARING... PLEASE WAIT...</h1>
+        <h1 class="text-center" id="textloading">STARTING... PLEASE WAIT...</h1>
         <img src="{% static 'massage/images/loaders/journalizing.gif' %}"  alt="" style="display: block;
   margin-left: auto;
   margin-right: auto;">
@@ -216,7 +223,10 @@ function change() {
     <div class="card-body">
         
         <h5 class="card-title text-center" id="journaltitle">Journal Number </h5>
-        
+         <div class="col-md-4 mb-3">
+                    <label for="validationCustom01">PLEASE SPECIFY JOURNAL DATE</label>
+                    <input id="BASEDATE" data-toggle="datepicker-year" class="form-control input-mask-trigger" data-inputmask-alias="datetime" data-inputmask-inputformat="mm/dd/yyyy" required im-insert="true" style="text-align: right;">
+            </div>
         <table style="width: 100%;" id="journaltable" class="table table-hover table-sm table-striped table-bordered " role="grid" cellspacing="0" cellpadding="2">
             <thead>
                 <tr role="row">
@@ -236,7 +246,8 @@ function change() {
         </table>
 
       
-        <button class="btn btn-primary" id="submit-table">SAVE</button>
+        <button class="btn btn-primary"  id="submit-table">SAVE</button>
+    
     </div>
 </div>
 {% endblock %}
