@@ -160,6 +160,9 @@ function change() {
         $("#tablecard").show();     
         })
     .fail(function(data) {
+        $("#loadingbody").hide(); 
+        $("#mainbody").show();
+        $("#tablecard").show();   
         Swal.fire({
         icon: 'error',
         title: 'Oops...',

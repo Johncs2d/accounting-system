@@ -8,22 +8,22 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count, Case, When, IntegerField, Q, F, Value
 from django.db.models.functions import Length, Upper
-from .models import chartofaccounts, service_category, serviceInfo, companyInfo, journalmain, journalcollections, employees, logs, journalTotals
+from .models import chartofaccounts, service_category, serviceInfo, companyInfo, journalmain, journalcollections, employees, logs
 import calendar
 from datetime import datetime
 import json, os, decimal,re
 from django.core.files import File
 from itertools import chain
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-from .workers import Net, databaseobjects, Trialbalance, Ledgering, balanceSheet
+from .workers import Net, databaseobjects, Trialbalance, Ledgering, balanceSheet, Journalize
 # Create your views here.
 
 
 def index(request):
-	p1 = Net()
+	p1 = Net(None,None)
 	
-	context = {"income": p1.netincome()[1],"expense":p1.netincome()[2],"netincome":p1.netincome()[0],"rawincome":p1.netincome()[3],
-				"rawexpenses":p1.netincome()[4]}
+	context = {"income": p1.netincome()[1],"expense":p1.netincome()[2],
+		"netincome":p1.netincome()[0],"rawincome":p1.netincome()[3],"rawexpenses":p1.netincome()[4]}
 	return render(request,"massage/index.html",context)
 
 def info(request):
@@ -73,17 +73,9 @@ def trialbalance(request):
 
 			enddate = request.POST.get("enddate",False)
 
-			starttime = datetime.strptime(startdate,'%m/%d/%Y')
-
-			endtime = datetime.strptime(enddate,'%m/%d/%Y')
-
-			newstart = starttime.strftime('%Y-%m-%d')
-
-			newend = endtime.strftime('%Y-%m-%d')
-
 			trial = Trialbalance()
 
-			return render(request,"massage/trialbalance.html",trial.trialbalance(newstart,newend))
+			return render(request,"massage/trialbalance.html",trial.trialbalance(startdate,enddate))
 		else:
 			return render(request,"massage/trialbalance.html",context)
 	else:
@@ -92,6 +84,7 @@ def trialbalance(request):
 def ledger(request):
 	objects = databaseobjects()
 	context = {"Journals": objects.alljournal(),"chart": objects.chartofaccs()}
+	ledgering = Ledgering()
 	if request.user.is_authenticated:
 
 		if request.method == "POST":
@@ -100,23 +93,14 @@ def ledger(request):
 
 				enddate = request.POST.get("enddate",False)
 
-				starttime = datetime.strptime(startdate,'%m/%d/%Y')
-
-				endtime = datetime.strptime(enddate,'%m/%d/%Y')
-
-				newstart = starttime.strftime('%Y-%m-%d')
-
-				newend = endtime.strftime('%Y-%m-%d')
-
 				account = request.POST.get("account",False)
 
-				return render(request,"massage/ledger.html",ledgerring.ledgering(newstart,newend,account))
+				return render(request,"massage/ledger.html",ledgering.ledgering(startdate,enddate,account))
 
 		else:
 			return render(request,"massage/ledger.html",context)
 	else:
 		return HttpResponseRedirect(reverse("index"))
-
 
 
 def balancesheet(request):
@@ -131,14 +115,6 @@ def balancesheet(request):
 
 			enddate = request.POST.get("enddate",False)
 
-			starttime = datetime.strptime(startdate,'%m/%d/%Y')
-
-			endtime = datetime.strptime(enddate,'%m/%d/%Y')
-
-			newstart = starttime.strftime('%Y-%m-%d')
-
-			newend = endtime.strftime('%Y-%m-%d')
-
 			accounts = ('Current assets','Non-current assets','Current liabilities',
 						'Non-current liabilities',"Owner's equity")
 			accounts1 = ('Current assets','Non-current assets','Current liabilities',
@@ -146,10 +122,10 @@ def balancesheet(request):
 			context = {}
 			balance = balanceSheet()
 			for x in accounts:
-				context[x.replace(" ","").replace("-","").replace("'","")] = balance.balancing(newstart,newend,x)
+				context[x.replace(" ","").replace("-","").replace("'","")] = balance.balancing(startdate,enddate,x)
 
 			for x in accounts1:
-				context[x.replace(" ","").replace("-","").replace("'","")+"totals"] = balance.totals(newstart,newend,x)
+				context[x.replace(" ","").replace("-","").replace("'","")+"totals"] = balance.totals(startdate,enddate,x)
 
 			context["totalasset"] = decimal.Decimal(context['Currentassetstotals']) + \
 			decimal.Decimal(context['Noncurrentassetstotals'])
@@ -168,7 +144,6 @@ def balancesheet(request):
 		return HttpResponseRedirect(reverse("index"))
 
 
-
 def incomestatement(request):
 	journalList = journalmain.objects.all()
 	context = {"Journals": journalList,}
@@ -176,31 +151,13 @@ def incomestatement(request):
 
 		if request.method == "POST":
 
-			try:
-				journs = request.POST.get("journs",False)
+			startdate = request.POST.get("startdate",False)
 
-				expenses = journalcollections.objects.filter(journalid__id=journs).filter(\
-						account_id__account_type="Expenses").order_by('account_id__account_number')
+			enddate = request.POST.get("enddate",False)
 
-				income = journalcollections.objects.filter(journalid__id=journs).filter(\
-						account_id__account_type="Income").order_by('account_id__account_number')
+			p1 = Net(startdate,enddate)
 
-				incomecr = 0.00
-				expensedr = 0.00
-
-				for x in income:
-					incomecr = decimal.Decimal(incomecr) + (x.credits - x.debits)
-
-				for x in expenses:
-					expensedr = decimal.Decimal(expensedr) + (x.debits - x.credits)
-
-				context = {	"income":income,"expenses":expenses,"Journals": journalList,"signs": 'True',
-							"incomecr":incomecr,"expensedr":expensedr,"netincome":incomecr-expensedr}
-
-				return render(request,"massage/incomestatement.html",context)
-
-			except ObjectDoesNotExist:
-				return render(request,"massage/incomestatement.html",context)
+			return render(request,"massage/incomestatement.html",p1.incomestatement())
 
 		else:
 			return render(request,"massage/incomestatement.html",context)
@@ -228,77 +185,15 @@ def journalize(request):
 
 #INSERT JOURNAL
 def inserjournal(request):
-	base = 0.00
-
-	path = os.path.join(BASE_DIR, 'journal.json')
 
 	data1 = request.POST["json"]
 	basedate = request.POST["basedate"]
 
-	datetimeobject1 = datetime.strptime(basedate,'%m/%d/%Y')
-	newformat1 = datetimeobject1.strftime('%Y-%m-%d')
-
-	with open(path, 'w') as data_file:
-		data_file.write(data1)
-		data_file.close()
-
-	create = journalmain(monthof=newformat1)
-	create.save()
-
-	with open(path) as data_file:
-
-		data = json.load(data_file)
-
-		for x in data:
-
-			accounttotalcred = chartofaccounts.objects.filter(account_number=int(x['accnum'])\
-				).aggregate(totalcreds=Sum('account_credbalance'))
-
-
-			accounttotaldeb = chartofaccounts.objects.filter(account_number=int(x['accnum'])\
-				).aggregate(totaldebs=Sum('account_debbalance'))
-
-
-			totals3 = journalTotals.objects.filter(account_id__account_number=int(x['accnum']),
-			journalid=create.id).aggregate(totaldebs=Sum('account_debbalance'))
-			
-			if totals3['totaldebs'] is None:
-				totals3['totaldebs'] = base
-
-			totals4 = journalTotals.objects.filter(account_id__account_number=int(x['accnum']),
-			journalid=create.id).aggregate(totalcreds=Sum('account_credbalance'))
-			
-			if totals4['totalcreds'] is None:
-				totals4['totalcreds'] = base
-
-			datetimeobject = datetime.strptime(x['date'],'%m/%d/%Y')
-
-			newformat = datetimeobject.strftime('%Y-%m-%d')
-
-			chartofaccs = chartofaccounts.objects.get(account_number=int(x['accnum']))
-
-			journalTotals.objects.update_or_create(
-			account_id=chartofaccs,journalid=create,
-			defaults={'account_number':x['accnum'],
-			'account_debbalance': decimal.Decimal(totals3['totaldebs'])+decimal.Decimal(x['deb']),
-			'account_credbalance': decimal.Decimal(totals4['totalcreds'])+decimal.Decimal(x['cred'])},)
-			
-			chartofaccounts.objects.filter(account_number=int(x['accnum'])).update(
-			account_debbalance=decimal.Decimal(accounttotaldeb['totaldebs'])+decimal.Decimal(x['deb']))
-			
-			chartofaccounts.objects.filter(account_number=int(x['accnum'])).update(
-			account_credbalance=decimal.Decimal(accounttotalcred['totalcreds'])+decimal.Decimal(x['cred']))
-			
-			add = journalcollections(transaction_date=newformat,account_id=chartofaccs,debits=float(x['deb']),
-			credits=float(x['cred']),description=x['des'],journalid=create)
-
-			add.save()
-
-			#print(connection.queries)
-
-	context = {"response":"Success"}
-
+	j = Journalize()
+	context = {"status":j.journalInsert(data1,basedate)}
 	return JsonResponse(context)
+
+
 	#SIGNUP
 def sign_up(request):
 	if request.user.is_authenticated:

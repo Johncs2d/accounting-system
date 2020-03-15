@@ -16,22 +16,26 @@ The Companys Income Statement
 <div class="main-card mb-3 card">
     <div class="card-body table-responsive">
         <div class="row">
-            <div class="col-md-12 col-lg-12 col-sm-12">
-                <h4 class="text-center">SELECT JOURNAL TO REPORT</h4>
-                <form class="needs-validation" novalidate method="POST" action="{% url 'incomestatement' %}">
+             <div class="col-md-12 col-lg-12 col-sm-12">
+                <p>Report Period</p>
+                <form class="needs-validation" novalidate autocomplete="off" method="POST" action="{% url 'incomestatement' %}">
                     {% csrf_token %}
                     <div class="input-group mb-3">
-                        <select name="journs" id="" required class="custom-select">
-                            <option value="">SELECT JOURNAL</option>
-                            {% for x in Journals %}
-                            <option value="{{x.id}}">{{x.monthof}}</option>
-                            {% endfor %}
-                        </select>
+                        <input type="text" name="startdate" class="form-control" required placeholder="Starting date" data-toggle="datepicker-year">
                         <div class="valid-feedback">
                             Looks good!
                         </div>
                         <div class="invalid-feedback">
-                            Please Input Journal!
+                            Please Input Starting Date!
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" name="enddate" class="form-control" required placeholder="End date" data-toggle="datepicker-year">
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                        <div class="invalid-feedback">
+                            Please Input End Date!
                         </div>
                     </div>
                     <input type="submit" value="Run Report" class="btn btn-success">
