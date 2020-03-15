@@ -8,14 +8,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count, Case, When, IntegerField, Q, F, Value
 from django.db.models.functions import Length, Upper
-from .models import chartofaccounts, service_category, serviceInfo, companyInfo, journalmain, journalcollections, employees, logs
+from .models import chartofaccounts, service_category, serviceInfo, journalmain, journalcollections, companyInfo
 import calendar
+from django.core import serializers
 from datetime import datetime
 import json, os, decimal,re
 from django.core.files import File
 from itertools import chain
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-from .workers import Net, databaseobjects, Trialbalance, Ledgering, balanceSheet, Journalize
+from .workers import Net, databaseobjects, Trialbalance, Ledgering, balanceSheet, Journalize, companysClass
 # Create your views here.
 
 
@@ -27,7 +28,44 @@ def index(request):
 	return render(request,"massage/index.html",context)
 
 def info(request):
-	return render(request,"massage/info.html")
+
+	objects = databaseobjects()
+	context = {"companyInfo":companyInfo.objects.all(),
+				"journalmain":journalmain.objects.all()}
+	
+
+	instance = companysClass()
+
+	if request.user.is_authenticated:
+
+		if request.method == "POST":
+			thisId = request.POST.get("id",False)
+
+			if thisId:
+				print("xx")
+				print(request.get("q",False))
+				comName = strip_tags(request.POST.get("q",False))
+				comPhone = strip_tags(request.POST.get("w",False))
+				comFax = strip_tags(request.POST.get("e",False))
+				comCountry = strip_tags(request.POST.get("r",False))
+				comCity = strip_tags(request.POST.get("t",False))
+				comState = strip_tags(request.POST.get("y",False))
+				comZip = strip_tags(request.POST.get("u",False))
+
+				context = instance.comInfo(comName,comPhone,comFax,comCountry,comCity,comState,comZip)
+			else:
+				journalId = request.POST["jourid"]
+				content = objects.getJournalInfo(journalId)
+				context = {"accs":content}
+			return JsonResponse(content, safe=False)
+
+		else:
+
+			return render(request,"massage/info.html",context)
+	else:
+
+		return HttpResponseRedirect(reverse("index"))
+	
 
 def charts(request):
 	
@@ -60,6 +98,7 @@ def insertaccount(request):
 	except IntegrityError:
 
 		return HttpResponse("Account Already Exist",status=403)
+
 
 def trialbalance(request):
 	objects = databaseobjects()
@@ -195,25 +234,25 @@ def inserjournal(request):
 
 
 	#SIGNUP
-def sign_up(request):
-	if request.user.is_authenticated:
-		return HttpResponseRedirect(reverse("index"))
-	else:
-		if request.method == "POST":
-			username = strip_tags(request.POST["username"])
-			email = strip_tags(request.POST["email"])
-			password = strip_tags(request.POST["password"])
-			fname = strip_tags(request.POST["fname"])
-			lname = strip_tags(request.POST["lname"])
-			try:
-				user = User.objects.create_user(username, email, password)
-				user.first_name = fname
-				user.last_name = lname
-				user.save()
-				user1 = authenticate(request, username=username, password=password)
-				login(request, user)
-				return HttpResponseRedirect(reverse("index"))
-			except IntegrityError:
-				pass
-		else:
-			return render(request, "massage/signup.html")
+# def sign_up(request):
+# 	if request.user.is_authenticated:
+# 		return HttpResponseRedirect(reverse("index"))
+# 	else:
+# 		if request.method == "POST":
+# 			username = strip_tags(request.POST["username"])
+# 			email = strip_tags(request.POST["email"])
+# 			password = strip_tags(request.POST["password"])
+# 			fname = strip_tags(request.POST["fname"])
+# 			lname = strip_tags(request.POST["lname"])
+# 			try:
+# 				user = User.objects.create_user(username, email, password)
+# 				user.first_name = fname
+# 				user.last_name = lname
+# 				user.save()
+# 				user1 = authenticate(request, username=username, password=password)
+# 				login(request, user)
+# 				return HttpResponseRedirect(reverse("index"))
+# 			except IntegrityError:
+# 				pass
+# 		else:
+# 			return render(request, "massage/signup.html")

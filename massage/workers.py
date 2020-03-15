@@ -38,6 +38,17 @@ class databaseobjects:
 		self.Journals = journalmain.objects.all()
 		return self.Journals
 
+	def getJournalInfo(self,accID):
+		self.id = accID
+		self.Journals = journalcollections.objects.filter(journalid__id=self.id)
+		accs = []
+		for x in self.Journals:
+			case = {"id":x.id,"date":x.transaction_date,"name":x.account_id.account_name,"number":x.account_id.account_number,\
+					"description":x.description,"credits":x.credits,"debits":x.debits}
+			accs.append(case)
+		return accs
+
+
 	def chartofaccs(self):
 		self.chart = chartofaccounts.objects.all()
 		return self.chart
@@ -71,6 +82,11 @@ class databaseobjects:
 			return decimal.Decimal(self.drawingdr['debits']) - decimal.Decimal(self.drawingcr['credits'])
 		except ObjectDoesNotExist:
 			return 0
+
+	def infocompany(self):
+		self.company = companyInfo.objects.all()
+		print(self.company)
+		return self.company
 
 #CLASS FOR CALCULATING NET INCOME
 class Net:
@@ -350,6 +366,33 @@ class Journalize:
 
 		
 
+class companysClass:
+
+	def comInfo(self,q,w,e,r,t,y,u):
+		try:
+			self.q = q
+			self.w = w
+			self.e = e
+			self.r = r
+			self.t = t
+			self.y = y
+			self.u = u
+			print(self.u)
+			print("IM AT CLASS")
+
+			companyInfo.objects.update_or_create(
+				id=1,defaults={'company_name':self.q,"company_phone":self.w,
+				"company_fax":self.e,"company_country":self.r,"company_city":self.t,
+				"company_state":self.y,"company_zip":self.u},
+				)
+			context ={"response":"Succes"}
+			return "context"
+		except Exception as e:
+			return HttpResponse(e,status=403)
+		
+		
+
+		
 
 
 

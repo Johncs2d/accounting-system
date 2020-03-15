@@ -10,6 +10,101 @@ The Companys Information
 {% endblock %}
 {% block reportsbtn %}
 {% endblock %}
+{% block scripts%}
+<script>
+    $(document).ready(function() {
+         $.ajaxSetup({headers: { 'X-CSRFToken': '{{ csrf_token }}' }});
+    });
+
+    function insertAccInfo() {
+        $.ajax({
+        url: '/info',
+        type: 'POST',
+        data: {q:$("#companyName").val(),w:$("#companyPhone").val(),
+            e:$("#companyFax").val(),r:$("#companyCountry").val(),
+            t:$("#companyCity").val(),y:$("#companyState").val(),
+            u:$("#companyZip").val(),"id":1},
+    })
+    .done(function(data) {
+          Swal.fire({
+        icon: 'success',
+        title: 'Company Info Updated',
+        showConfirmButton: false,
+        timer: 1500
+        })
+    })
+    .fail(function(data) {
+        Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: `Something went wrong! ${data.responseText}`,
+        footer: '<a href>Why do I have this issue?</a>'
+        })
+    })
+    }
+   
+function loadjournal(x)
+{
+
+if (!x) {
+$('#journaltable').find('tbody').detach();
+$('#journaltable').append($('<tbody>'));
+}
+else{
+
+    $.ajax({
+     url: '/info',
+     type: 'POST',
+     data: {jourid:x},
+ })
+ .done(function(data) {
+$('#journaltable').find('tbody').detach();
+$('#journaltable').append($('<tbody>'));
+for (x in data){
+$('#journaltable > tbody:last-child').append(
+`
+<tr role="row" class="odd" id="row${data[x].id}" contenteditable="false">
+<td id="q${data[x].id}">${data[x].date}</td>
+<td id="w${data[x].id}">${data[x].name}</td>
+<td id="e${data[x].id}">${data[x].number}</td>
+<td id="r${data[x].id}">${data[x].description}</td>
+<td id="t${data[x].id}">$ ${data[x].credits}</td>
+<td id="y${data[x].id}">$ ${data[x].debits}</td>
+<td><input value="Edit" class="btn btn-primary" onclick="editable(${data[x].id})" id="btn${data[x].id}"></td>
+</tr>`
+);
+
+}
+ })
+ .fail(function(data) {
+     console.log("error");
+ })
+}
+ 
+ 
+}
+
+function editable(y){
+var value = $("#row"+y).attr('contenteditable');
+if (value == 'false') {
+
+$("#row"+y).attr('contenteditable','true');
+$("#row"+y).css("background-color", "black");
+$("#row"+y).css("color", "white");
+}
+else{
+
+$("#row"+y).attr('contenteditable','false');
+$("btn"+y).val('Edit')
+
+$("#row"+y).css("background-color", "white");
+$("#row"+y).css("color", "black");
+}
+
+}
+    
+</script>
+{% endblock %}
 {% block body %}
 <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav">
     <li class="nav-item">
@@ -31,8 +126,39 @@ The Companys Information
 <div class="tab-content">
     <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
         <div class="main-card mb-3 card">
-            <div class="card-body">
-                <h1 class="card-title">The {Tranquil Touch Massage}</h1>
+            <div class="card-body text-center">
+                {% for x in companyInfo %}
+                <h1 style="font-family: cursive;">{{x.company_name}}</h1>
+                <h6>{{x.company_city}}, {{x.company_state}}, {{x.company_country}}, {{x.company_zip}}</h6>
+                <p>Fax: {{x.company_fax}}. Phone: {{x.company_phone}}</p>
+                {% endfor %}
+                <div class="main-card mb-3 card">
+                    <div class="card-body">
+                        <h3>JOURNAL LIST</h3>
+                        <select id="journallist" class="custom-select" onchange="loadjournal($(this).val())">
+                            <option value="">SELECT JOURNAL FOR THE MONTH OF</option>
+                            {% for x in journalmain %}
+                            <option value="{{x.id}}">{{x.monthof}}</option>
+                            {% endfor %}
+                        </select>
+                        <div id="tablehere">
+                            <table style="width: 100%;" id="journaltable" class="table table-hover table-sm table-striped table-bordered " role="grid" cellspacing="0" cellpadding="2">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Date</th>
+                                        <th>Name</th>
+                                        <th>Number</th>
+                                        <th>Description</th>
+                                        <th>Credits</th>
+                                        <th>Debits</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="appendhere">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -40,11 +166,11 @@ The Companys Information
         <div class="main-card mb-3 card">
             <div class="card-body">
                 <h5 class="card-title">Enter Company Information</h5>
-                <form class="needs-validation" novalidate>
+                <form class="needs-validation1" novalidate>
                     <div class="form-row">
                         <div class="col-md-4 mb-3">
                             <label for="validationCustom01">Company Name</label>
-                            <input type="text" class="form-control" id="validationCustom01" required>
+                            <input type="text" class="form-control" id="companyName" required>
                             <div class="valid-feedback">
                                 Looks good!
                             </div>
@@ -54,7 +180,7 @@ The Companys Information
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="validationCustom02">Company Phone</label>
-                            <input type="text" class="form-control" id="validationCustom02" required>
+                            <input type="text" class="form-control" id="companyPhone" required>
                             <div class="valid-feedback">
                                 Looks good!
                             </div>
@@ -68,7 +194,7 @@ The Companys Information
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="inputGroupPrepend">@</span>
                                 </div>
-                                <input type="text" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required>
+                                <input type="text" class="form-control" id="companyFax" aria-describedby="inputGroupPrepend" required>
                                 <div class="valid-feedback">
                                     Looks good!
                                 </div>
@@ -81,28 +207,28 @@ The Companys Information
                     <div class="form-row">
                         <div class="col-md-3 mb-3">
                             <label for="validationCustom03">Country</label>
-                            <input type="text" class="form-control" id="validationCustom03" placeholder="Country" required>
+                            <input type="text" class="form-control" id="companyCountry" placeholder="Country" required>
                             <div class="invalid-feedback">
                                 Please provide a valid Country.
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label for="validationCustom03">City</label>
-                            <input type="text" class="form-control" id="validationCustom03" placeholder="City" required>
+                            <input type="text" class="form-control" id="companyCity" placeholder="City" required>
                             <div class="invalid-feedback">
                                 Please provide a valid city.
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label for="validationCustom04">State</label>
-                            <input type="text" class="form-control" id="validationCustom04" placeholder="State" required>
+                            <input type="text" class="form-control" id="companyState" placeholder="State" required>
                             <div class="invalid-feedback">
                                 Please provide a valid state.
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label for="validationCustom05">Zip</label>
-                            <input type="text" class="form-control" id="validationCustom05" placeholder="Zip" required>
+                            <input type="text" class="form-control" id="companyZip" placeholder="Zip" required>
                             <div class="invalid-feedback">
                                 Please provide a valid zip.
                             </div>
@@ -110,25 +236,6 @@ The Companys Information
                     </div>
                     <button class="btn btn-primary" type="submit">Submit form</button>
                 </form>
-                <script>
-                    (function() {
-                                        'use strict';
-                                        window.addEventListener('load', function() {
-                                           
-                                            var forms = document.getElementsByClassName('needs-validation');
-                                            // Loop over them and prevent submission
-                                            var validation = Array.prototype.filter.call(forms, function(form) {
-                                                form.addEventListener('submit', function(event) {
-                                                    if (form.checkValidity() === false) {
-                                                        event.preventDefault();
-                                                        event.stopPropagation();
-                                                    }
-                                                    form.classList.add('was-validated');
-                                                }, false);
-                                            });
-                                        }, false);
-                                    })();
-                                </script>
             </div>
         </div> <!-- end -->
     </div>
@@ -136,7 +243,7 @@ The Companys Information
         <div class="main-card mb-3 card">
             <div class="card-body">
                 <h5 class="card-title">Product/Service Information</h5>
-                <form class="needs-validation1" novalidate>
+                <form class="needs-validation" novalidate>
                     <div class="form-row">
                         <div class="col-md-4 mb-3">
                             <label for="validationCustom01">Name</label>
@@ -155,11 +262,9 @@ The Companys Information
                         <div class="col-md-4 mb-3">
                             <label for="validationCustomUsername">Category</label>
                             <div class="input-group">
-
                                 <input type="text" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" list="exampleList">
                                 <datalist id="exampleList">
-                                <option value="1">Binisaya</option>
-
+                                    <option value="1">Binisaya</option>
                                 </datalist>
                             </div>
                         </div>
@@ -179,11 +284,9 @@ The Companys Information
                         <div class="col-md-3 mb-3">
                             <label for="validationCustom04">Income Account</label>
                             <input type="text" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required list="incomelist">
-                                <datalist id="incomelist">
-                                <option  value="1">Sales</option>
-                                
-
-                                </datalist>
+                            <datalist id="incomelist">
+                                <option value="1">Sales</option>
+                            </datalist>
                         </div>
                     </div>
                     <button class="btn btn-primary" type="submit">Insert</button>
@@ -200,6 +303,10 @@ The Companys Information
                                 if (form.checkValidity() === false) {
                                     event.preventDefault();
                                     event.stopPropagation();
+                                } else {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    insertAccInfo()
                                 }
                                 form.classList.add('was-validated');
                             }, false);
