@@ -8,19 +8,23 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count, Case, When, IntegerField, Q, F, Value
 from django.db.models.functions import Length, Upper
-from .models import chartofaccounts, service_category, serviceInfo, companyInfo, journalmain, journalcollections, employees, logs, journalTotals
-# Create your views here.
+from .models import chartofaccounts, service_category, serviceInfo, companyInfo, journalmain, journalcollections, employees, logs
+import calendar
 from datetime import datetime
-import json, os, decimal
+import json, os, decimal,re
 from django.core.files import File
 from itertools import chain
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from .workers import Net, databaseobjects, Trialbalance, Ledgering, balanceSheet, Journalize
+# Create your views here.
 
 
 def index(request):
-
-
-	return render(request,"massage/index.html")
+	p1 = Net(None,None)
+	
+	context = {"income": p1.netincome()[1],"expense":p1.netincome()[2],
+		"netincome":p1.netincome()[0],"rawincome":p1.netincome()[3],"rawexpenses":p1.netincome()[4]}
+	return render(request,"massage/index.html",context)
 
 def info(request):
 	return render(request,"massage/info.html")
@@ -58,155 +62,40 @@ def insertaccount(request):
 		return HttpResponse("Account Already Exist",status=403)
 
 def trialbalance(request):
-
-	context = {"Journals": journalmain.objects.all()}
+	objects = databaseobjects()
+	context = {"Journals": objects.alljournal()}
 
 	if request.user.is_authenticated:
 
 		if request.method == "POST":
 
 			startdate = request.POST.get("startdate",False)
+
 			enddate = request.POST.get("enddate",False)
-			
-			
-			try:
-				
 
-				if startdate is not False:
-					
-					
-					starttime = datetime.strptime(startdate,'%m/%d/%Y')
+			trial = Trialbalance()
 
-					endtime = datetime.strptime(enddate,'%m/%d/%Y')
-
-					newstart = starttime.strftime('%Y-%m-%d')
-
-					newend = endtime.strftime('%Y-%m-%d')
-
-					context = {"journals": journalTotals.objects.filter(journalid__datecreated__gte=newstart,
-								journalid__datecreated__lte=newend).order_by('account_id__account_number'),
-								"Startdate":startdate,
-								"Endate":enddate,
-								"Journals": journalmain.objects.all(),
-								"signs": 'True'}
-				else:
-					journs = request.POST.get("journs",False)
-					context = {
-					"journals": journalTotals.objects.filter(journalid__id=journs).order_by('account_id__account_number'),
-
-
-					"Journals": journalmain.objects.all(),"signs": 'True'}
-
-
-
-				return render(request,"massage/trialbalance.html",context)
-
-			except ObjectDoesNotExist:
-
-				return render(request,"massage/trialbalance.html",context)
-
+			return render(request,"massage/trialbalance.html",trial.trialbalance(startdate,enddate))
 		else:
 			return render(request,"massage/trialbalance.html",context)
 	else:
 		return HttpResponseRedirect(reverse("index"))
-			
-	
 
 def ledger(request):
-	context = {"Journals": journalmain.objects.all(),
-			   }
+	objects = databaseobjects()
+	context = {"Journals": objects.alljournal(),"chart": objects.chartofaccs()}
+	ledgering = Ledgering()
 	if request.user.is_authenticated:
 
 		if request.method == "POST":
 
-			
-			
-			try:
-				journalList = journalmain.objects.all()
 				startdate = request.POST.get("startdate",False)
+
 				enddate = request.POST.get("enddate",False)
-				print(startdate)
-				print(enddate)
-				if startdate is not False:
-					
-					starttime = datetime.strptime(startdate,'%m/%d/%Y')
 
-					endtime = datetime.strptime(enddate,'%m/%d/%Y')
+				account = request.POST.get("account",False)
 
-					newstart = starttime.strftime('%Y-%m-%d')
-
-					newend = endtime.strftime('%Y-%m-%d')
-
-					rowCount = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).count()
-
-					totaldebit = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).aggregate(totaldebs=Sum('debits'))
-
-					totalcredit = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).aggregate(totalcreds=Sum('credits'))
-					str(totalcredit.query)
-
-					if totaldebit['totaldebs'] is not None:
-						finaltotal = decimal.Decimal(totaldebit['totaldebs'])
-					else:
-						finaltotal = 0.00
-
-					if totalcredit['totalcreds'] is not None:
-						finaltotal1 = decimal.Decimal(totalcredit['totalcreds'])
-					else:
-						finaltotal1 = 0.00
-					
-
-					rangedJournal = journalcollections.objects.filter(transaction_date__gte=newstart,
-									transaction_date__lte=newend).order_by('account_id__account_number')
-
-					context = {"journals": rangedJournal,
-								"Startdate":startdate,
-								"Endate":enddate,
-								"Journals": journalList,
-								"creditstotal":finaltotal1,
-								"debitstotal":finaltotal,
-								"rowCount":rowCount,
-								"signs": 'True'
-								}
-				else:
-
-					journs = request.POST.get("journs",False)
-
-					rowCount = journalcollections.objects.filter(journalid__id=journs).count()
-					
-					totaldebit = journalcollections.objects.filter(journalid__id=journs).aggregate(totaldebs=Sum('debits'))
-					
-					totalcredit = journalcollections.objects.filter(journalid__id=journs).aggregate(totalcreds=Sum('credits'))
-
-					filteredJournal = journalcollections.objects.filter(journalid__id=journs).order_by('account_id__account_number')
-					
-
-					if totaldebit['totaldebs'] is not None:
-						finaltotal = decimal.Decimal(totaldebit['totaldebs'])
-					else:
-						finaltotal = 0.00
-
-					if totalcredit['totalcreds'] is not None:
-						finaltotal1 = decimal.Decimal(totalcredit['totalcreds'])
-					else:
-						finaltotal1 = 0.00
-
-
-					context = {"journals": filteredJournal,
-							   "Journals": journalList,
-							   "creditstotal":finaltotal1,
-								"debitstotal":finaltotal,
-								"rowCount":rowCount,
-								"signs": 'True'
-								}
-
-				return render(request,"massage/ledger.html",context)
-
-			except ObjectDoesNotExist:
-
-				return render(request,"massage/ledger.html",context)
+				return render(request,"massage/ledger.html",ledgering.ledgering(startdate,enddate,account))
 
 		else:
 			return render(request,"massage/ledger.html",context)
@@ -215,249 +104,96 @@ def ledger(request):
 
 
 def balancesheet(request):
-
-	context = {"Journals": journalmain.objects.all(),
-			   }
+	objects = databaseobjects()
+	journalList = journalmain.objects.all()
+	context = {"Journals": objects.alljournal()}
 	if request.user.is_authenticated:
 
 		if request.method == "POST":
 
-			
-			
-			try:
-				journalList = journalmain.objects.all()
-				startdate = request.POST.get("startdate",False)
-				enddate = request.POST.get("enddate",False)
-				print(startdate)
-				print(enddate)
-				if startdate is not False:
-					
-					starttime = datetime.strptime(startdate,'%m/%d/%Y')
+			startdate = request.POST.get("startdate",False)
 
-					endtime = datetime.strptime(enddate,'%m/%d/%Y')
+			enddate = request.POST.get("enddate",False)
 
-					newstart = starttime.strftime('%Y-%m-%d')
+			accounts = ('Current assets','Non-current assets','Current liabilities',
+						'Non-current liabilities',"Owner's equity")
+			accounts1 = ('Current assets','Non-current assets','Current liabilities',
+						'Non-current liabilities',"Owner's equity")
+			context = {}
+			balance = balanceSheet()
+			for x in accounts:
+				context[x.replace(" ","").replace("-","").replace("'","")] = balance.balancing(startdate,enddate,x)
 
-					newend = endtime.strftime('%Y-%m-%d')
+			for x in accounts1:
+				context[x.replace(" ","").replace("-","").replace("'","")+"totals"] = balance.totals(startdate,enddate,x)
 
-					current_assets = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type='Current assets')\
-								.order_by('account_id__account_number')
+			context["totalasset"] = decimal.Decimal(context['Currentassetstotals']) + \
+			decimal.Decimal(context['Noncurrentassetstotals'])
 
-					# current_assets_total = journalcollections.objects.filter(transaction_date__gte=newstart,
-					# 			transaction_date__lte=newend).filter(account_id__account_type='Current assets')\
-					# 			.annotate(totalcurrentAssets=F('debits') - F('credits')).first()
+			context["totalliabilities"] = decimal.Decimal(context['Noncurrentliabilitiestotals']) + \
+			decimal.Decimal(context['Currentliabilitiestotals'])
 
-					nonCurrent_assets = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(Q(account_id__account_type='Fixed assets')\
-								|Q(account_id__account_type='Non-current assets')).order_by('account_id__account_number')
-					
-					current_liabilities = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type='Current liabilities')\
-								.order_by('account_id__account_number')
+			context["totalliabilitesandequity"] = (decimal.Decimal(context['Noncurrentliabilitiestotals']) + \
+				decimal.Decimal(context['Currentliabilitiestotals']))+(decimal.Decimal(context['Ownersequitytotals']))
 
-					nonCurrent_liabilities = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type='Non-current liabilities')\
-								.order_by('account_id__account_number')			
-					
-					ownersequity = journalcollections.objects.filter(transaction_date__gte=newstart,
-								transaction_date__lte=newend).filter(account_id__account_type="Owner's equity")\
-								.order_by('account_id__account_number')
-
-					context = {	"current_assets":current_assets,
-								"nonCurrent_assets":nonCurrent_assets,
-								"current_liabilities":current_liabilities,
-								"nonCurrent_liabilities":nonCurrent_liabilities,
-								"ownersequity":ownersequity,
-								"Startdate":startdate,
-								"Endate":enddate,
-								"Journals": journalList,
-								"signs": 'True'
-								}
-				else:
-
-					journs = request.POST.get("journs",False)
-
-					current_assets = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type='Current assets')\
-								.order_by('account_id__account_number')
-
-					nonCurrent_assets = journalTotals.objects.filter(journalid__id=journs).filter(Q(account_id__account_type='Fixed assets')\
-								|Q(account_id__account_type='Non-current assets')).order_by('account_id__account_number')
-					
-					current_liabilities = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type='Current liabilities')\
-								.order_by('account_id__account_number')
-
-					nonCurrent_liabilities = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type='Non-current liabilities')\
-								.order_by('account_id__account_number')			
-					
-					ownersEquity = journalTotals.objects.filter(journalid__id=journs).filter(account_id__account_type="Owner's equity")\
-								.order_by('account_id__account_number')
-
-					expenses = journalcollections.objects.filter(journalid__id=journs).filter(account_id__account_type="Expenses")\
-								.order_by('account_id__account_number')
-
-					income = journalcollections.objects.filter(journalid__id=journs).filter(account_id__account_type="Income")\
-								.order_by('account_id__account_number')
-
-
-					context = {	"current_assets":current_assets,
-								"nonCurrent_assets":nonCurrent_assets,
-								"current_liabilities":current_liabilities,
-								"income":income,
-								"expenses":expenses,
-								"nonCurrent_liabilities":nonCurrent_liabilities,
-								"ownersEquity":ownersEquity,
-								"Journals": journalList,
-								"signs": 'True'
-								}
-
-				return render(request,"massage/balancesheet.html",context)
-
-			except ObjectDoesNotExist:
-
-				return render(request,"massage/balancesheet.html",context)
+			return render(request,"massage/balancesheet.html",context)
 
 		else:
 			return render(request,"massage/balancesheet.html",context)
 	else:
 		return HttpResponseRedirect(reverse("index"))
 
+
 def incomestatement(request):
 	journalList = journalmain.objects.all()
-	context = {"Journals": journalList,
-			   }
+	context = {"Journals": journalList,}
 	if request.user.is_authenticated:
 
 		if request.method == "POST":
 
-			
-			
-			try:
-				
-				startdate = request.POST.get("startdate",False)
-				enddate = request.POST.get("enddate",False)
+			startdate = request.POST.get("startdate",False)
 
-				if startdate is not False:
-					
-					starttime = datetime.strptime(startdate,'%m/%d/%Y')
+			enddate = request.POST.get("enddate",False)
 
-					endtime = datetime.strptime(enddate,'%m/%d/%Y')
+			p1 = Net(startdate,enddate)
 
-					newstart = starttime.strftime('%Y-%m-%d')
-
-					newend = endtime.strftime('%Y-%m-%d')
-
-				else:
-					journs = request.POST.get("journs",False)
-
-
-					expenses = journalcollections.objects.filter(journalid__id=journs).filter(account_id__account_type="Expenses")\
-								.order_by('account_id__account_number')
-
-					income = journalcollections.objects.filter(journalid__id=journs).filter(account_id__account_type="Income")\
-								.order_by('account_id__account_number')		
-
-					context = {	"income":income,
-								"expenses":expenses,
-								"Journals": journalList,
-								"signs": 'True'
-								}
-
-				return render(request,"massage/incomestatement.html",context)
-
-			except ObjectDoesNotExist:
-
-				return render(request,"massage/incomestatement.html",context)
+			return render(request,"massage/incomestatement.html",p1.incomestatement())
 
 		else:
 			return render(request,"massage/incomestatement.html",context)
+
 	else:
 		return HttpResponseRedirect(reverse("index"))
 
 
 def receive(request):
 	return render(request,"massage/receive.html")
-	#JOURNALIZE
+
+
+#JOURNALIZE
 def journalize(request):
 	try:
 		maxid = journalmain.objects.all().order_by("-id")[0]
+
 	except IndexError:
 		 maxid = 1
-	context = {"chart": chartofaccounts.objects.all(),
-			   "maxid": maxid
-			   }
-	return render(request,"massage/journal.html",context)
-	#INSERT JOURNAL
-def inserjournal(request):
-	base = 0.00
 
-	path = os.path.join(BASE_DIR, 'journal.json')
+	context = {"chart": chartofaccounts.objects.all(),"maxid": maxid}
+
+	return render(request,"massage/journal.html",context)
+
+
+#INSERT JOURNAL
+def inserjournal(request):
 
 	data1 = request.POST["json"]
+	basedate = request.POST["basedate"]
 
-	with open(path, 'w') as data_file:
-		data_file.write(data1)
-		data_file.close()
-
-	create = journalmain()
-	create.save()
-
-	with open(path) as data_file:
-
-		data = json.load(data_file)
-
-		for x in data:
-
-			totals1 = journalcollections.objects.filter(account_id__account_number=int(x['accnum']),
-			journalid=create.id).aggregate(totalcreds=Sum('account_id__account_credbalance'))
-
-			if totals1['totalcreds'] is None:
-				totals1['totalcreds'] = base;
-
-			totals2 = journalcollections.objects.filter(account_id__account_number=int(x['accnum']),
-			journalid=create.id).aggregate(totaldebs=Sum('account_id__account_debbalance'))
-			
-			if totals2['totaldebs'] is None:
-				totals2['totaldebs'] = base;
-
-			totals3 = journalTotals.objects.filter(account_id__account_number=int(x['accnum']),
-			journalid=create.id).aggregate(totaldebs=Sum('account_debbalance'))
-			
-			if totals3['totaldebs'] is None:
-				totals3['totaldebs'] = base;
-
-			totals4 = journalTotals.objects.filter(account_id__account_number=int(x['accnum']),
-			journalid=create.id).aggregate(totalcreds=Sum('account_credbalance'))
-			
-			if totals4['totalcreds'] is None:
-				totals4['totalcreds'] = base;
-
-			datetimeobject = datetime.strptime(x['date'],'%m/%d/%Y')
-
-			newformat = datetimeobject.strftime('%Y-%m-%d')
-
-			chartofaccs = chartofaccounts.objects.get(account_number=int(x['accnum']))
-
-			journalTotals.objects.update_or_create(
-			account_id=chartofaccs,journalid=create,
-			defaults={'account_number':x['accnum'],
-			'account_debbalance': decimal.Decimal(totals3['totaldebs'])+decimal.Decimal(x['deb']),
-			'account_credbalance': decimal.Decimal(totals4['totalcreds'])+decimal.Decimal(x['cred'])},)
-			
-			chartofaccounts.objects.filter(account_number=int(x['accnum'])).update(
-			account_debbalance=decimal.Decimal(totals2['totaldebs'])+decimal.Decimal(x['deb']))
-			
-			chartofaccounts.objects.filter(account_number=int(x['accnum'])).update(
-			account_credbalance=decimal.Decimal(totals1['totalcreds'])+decimal.Decimal(x['cred']))
-			
-			add = journalcollections(transaction_date=newformat,account_id=chartofaccs,debits=float(x['deb']),
-			credits=float(x['cred']),description=x['des'],journalid=create)
-
-			add.save()
-
-	context = {"response":"Success"}
-
+	j = Journalize()
+	context = {"status":j.journalInsert(data1,basedate)}
 	return JsonResponse(context)
+
+
 	#SIGNUP
 def sign_up(request):
 	if request.user.is_authenticated:

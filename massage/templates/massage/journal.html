@@ -1,4 +1,5 @@
 {% extends "massage/includes.html" %}
+{% load static %}
 {% block title %}
 JOURNAL
 {% endblock %}
@@ -12,77 +13,103 @@ Journal Entry
 {% endblock %}
 {% block scripts %}
 <script>
+var ROWID =1;
+'use strict';
+$(document).ready(function() {
+    $.ajaxSetup({headers: { 'X-CSRFToken': '{{ csrf_token }}' }});
 
+    let maxid = parseInt('000'+'{{maxid.id}}')+1;
 
- $(document).ready(function() {
-      $.ajaxSetup({
-        headers: { 'X-CSRFToken': '{{ csrf_token }}' }
-    });
-let maxid = parseInt('000'+'{{maxid.id}}')+1;
-$('#journaltitle').html('Journal Number: '+maxid);
+    $('#journaltitle').html('Journal Number: '+maxid);
 
+$("#loadingbody").hide();
+
+if (ROWID==1) {
+
+$("#submit-table").hide();
+
+}
+else {
+
+    $("#submit-table").show();
+}
 
 
  });
 
-var rowid =1;
 
-function removerow(id){
-    $("#tr"+id).hide('slow',"linear",remove(id));
+function removerow(id){$("#tr"+id).hide('slow',"linear",remove(id));}
+
+function remove(id){$('#tr'+id).remove();ROWID--;
+
+if (ROWID==1) {
+
+$("#submit-table").hide();
+
 }
-function remove(id){
-    $('#tr'+id).remove();
+else {
+
+    $("#submit-table").show();
 }
-        (function() {
-            'use strict';
-            window.addEventListener('load', function() {
 
-                var forms = document.getElementsByClassName('needs-validation1');
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function(form) {
-                    form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                             form.classList.add('was-validated');
-                        }
-                        else{
-                             event.preventDefault();
-                             event.stopPropagation();
-                             form.classList.add('was-validated');
+}
 
-                  var date =   $("#date").val();
-                  var acName =   $("#account").val();
-                  var debits =   $("#debits").val();
-                  var credits =   $("#credits").val();
-                  var desc =   $("#desc").val();
-                  var acID  = parseFloat(acName);
-                  var acName1 = acName.substring(3)
+
+(function() {
+    window.addEventListener('load', function() {
+    var forms = document.getElementsByClassName('needs-validation1');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms, function(form) {
+    form.addEventListener('submit', function(event) {
+    
+    if (form.checkValidity() === false){
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+    }
+    
+    else{
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+
+        var date =   $("#date").val();
+        var acName =   $("#account").val();
+        var debits =   $("#debits").val();
+        var credits =   $("#credits").val();
+        var desc =   $("#desc").val();
+        var acID  = parseFloat(acName);
+        var acName1 = acName.substring(3)
                  
-                  
-                $('#journaltable > tbody:last-child').append(
-                   `<tr role="row" class="odd" id="tr${rowid}">
-                    <td>${date}</td>
-                    <td>${acID}</td>
-                    <td>${acName1}</td>
-                    <td data-override="${debits}">$${debits}</td>
-                    <td data-override="${credits}">$${credits}</td>
-                    <td>${desc}</td>
-                    <td><button class="btn btn-danger" onclick="removerow(${rowid})">DELETE</button></td>
-                    </tr>`);
+        $('#journaltable > tbody:last-child').append(
+            `<tr role="row" class="odd" id="tr${ROWID}">
+                <td  id="date${ROWID}">${date}</td>
+                <td  id="acID${ROWID}">${acID}</td>
+                <td  id="acName${ROWID}">${acName1}</td>
+                <td  id="debit${ROWID}" data-override="${debits}">$${debits}</td>
+                <td  id="credit${ROWID}" data-override="${credits}">$${credits}</td>
+                <td  id="desc${ROWID}">${desc}</td>
+                <td  id="delete${ROWID}">
+                <button class="btn btn-danger" onclick="removerow(${ROWID})">DELETE</button>
+                </td>
+                
+            </tr>`);
 
-               $("#account").val('');
-               $("#debits").val('');
-               $("#credits").val('');
-               $("#desc").val('');
-                $("#date").val('');
-                let  table = $('#journaltable').tableToJSON({ignoreColumns: [6]});
-                            // Store
-                            localStorage.setItem("Charts", JSON.stringify(table));
-                            form.classList.remove("was-validated");
-                            rowid++;
-                            $("#journaltable").tableDnD();
-                        }
+        $("#account").val('');
+        $("#debits").val('');
+        $("#credits").val('');
+        $("#desc").val('');
+        $("#date").val('');
+
+        form.classList.remove("was-validated");
+        ROWID++;
+
+       $("#journaltable").tableDnD();
+        
+        if (ROWID==1) {$("#submit-table").hide();}
+        else {$("#submit-table").show();}
+
+        }
                        
                     }, false);
                 });
@@ -90,49 +117,77 @@ function remove(id){
         })();
 
 $('#submit-table').click( function() {
-  var table = $('#journaltable').tableToJSON({ignoreColumns: [6]}); // Convert the table into a javascript object
 
 
-console.log(JSON.stringify(table));
-table1 = JSON.stringify(table);
+    if (!$("#BASEDATE").val()) {
+alert("PLEASE INPUT JOURNAL DATE");
+    }
+    else{
+    // Convert the table into a javascript object
+    var table = $('#journaltable').tableToJSON({ignoreColumns: [6]}); 
+    table1 = JSON.stringify(table);
+$("#mainbody").hide();
+$("#tablecard").hide();
+$("#loadingbody").show();    
+var text = ["PREPARING YOUR BOOK...", "ANALYZING DATA....","CHECKING FOR ERRORS", "WRITING YOUR JOURNAL.."];
+var counter = 0;
+var elem = $("#textloading");
+setInterval(change, 3000);
+function change() {
+    elem.fadeOut(function(){
+        elem.html(text[counter]);
+        counter++;
+        if(counter >= text.length) { counter = 0; }
+        elem.fadeIn();
+    });
+}    
+    $.ajax({
+        url:"{% url 'inserjournal' %}",
+        type: 'POST',
+        data: {json: table1,basedate:$("#BASEDATE").val(),},
+        })
+    .done(function(data) {
+        Swal.fire({
+        icon: 'success',
+        title: 'Journal Added',
+        showConfirmButton: false,
+        timer: 1500
+        })
+        $('#journaltable').find('tbody').detach();
+        $('#journaltable').append($('<tbody>'));
+        $("#loadingbody").hide(); 
+        $("#mainbody").show();
+        $("#tablecard").show();     
+        })
+    .fail(function(data) {
+        $("#loadingbody").hide(); 
+        $("#mainbody").show();
+        $("#tablecard").show();   
+        Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: `Something went wrong! ${data.responseText}`,
+        footer: '<a href>Why do I have this issue?</a>'
+        })
+        })
+    }
+    });
+</script>
 
-$.ajax({
-url: "/inserjournal",
-type: 'POST',
-data: {
-json: table1,
 
-},
-})
-.done(function(data) {
-Swal.fire({
-icon: 'success',
-title: 'Journal Added',
-showConfirmButton: false,
-timer: 1500
-})
-$('#journaltable').find('tbody').detach();
-$('#journaltable').append($('<tbody>'));  
-
-
-})
-.fail(function(data) {
-Swal.fire({
-icon: 'error',
-title: 'Oops...',
-text: `Something went wrong! ${data.responseText}`,
-footer: '<a href>Why do I have this issue?</a>'
-})
-})
-
-});
-        </script>
 {% endblock %}
 {% block body %}
 <div class="main-card mb-3 card">
-    <div class="card-body">
+    <div class="card-body" id="loadingbody">
+        <h1 class="text-center" id="textloading">STARTING... PLEASE WAIT...</h1>
+        <img src="{% static 'massage/images/loaders/journalizing.gif' %}"  alt="" style="display: block;
+  margin-left: auto;
+  margin-right: auto;">
+    </div>
+    <div class="card-body" id="mainbody">
 
         <h5 class="card-title">Product/Service Information</h5>
+
         <form class="needs-validation1" novalidate>
             <div class="form-row">
                 <div class="col-md-2 mb-3">
@@ -167,11 +222,14 @@ footer: '<a href>Why do I have this issue?</a>'
         </form>
     </div>
 </div>
-<div class="main-card mb-3 card">
+<div class="main-card mb-3 card" id="tablecard">
     <div class="card-body">
         
         <h5 class="card-title text-center" id="journaltitle">Journal Number </h5>
-        
+         <div class="col-md-4 mb-3">
+                    <label for="validationCustom01">PLEASE SPECIFY JOURNAL DATE</label>
+                    <input id="BASEDATE" data-toggle="datepicker-year" class="form-control input-mask-trigger" data-inputmask-alias="datetime" data-inputmask-inputformat="mm/dd/yyyy" required im-insert="true" style="text-align: right;">
+            </div>
         <table style="width: 100%;" id="journaltable" class="table table-hover table-sm table-striped table-bordered " role="grid" cellspacing="0" cellpadding="2">
             <thead>
                 <tr role="row">
@@ -186,8 +244,13 @@ footer: '<a href>Why do I have this issue?</a>'
             </thead>
             <tbody id="tbodys">
             </tbody>
+
+
         </table>
-        <button class="btn btn-primary" id="submit-table">SAVE</button>
+
+      
+        <button class="btn btn-primary"  id="submit-table">SAVE</button>
+    
     </div>
 </div>
 {% endblock %}
