@@ -105,7 +105,7 @@ class Net:
   	expensedr = 0.00
   	for x in self.expense:
   		expensedr = decimal.Decimal(expensedr) + (x.debits - x.credits)
-  	net = incomecr - expensedr
+  	net = decimal.Decimal(incomecr) - decimal.Decimal(expensedr)
   	return net,incomecr,expensedr,self.gross,self.expense
 
   def incomestatement(self):
@@ -127,7 +127,7 @@ class Net:
   	for x in self.totalexpense:
   		expensedr = decimal.Decimal(expensedr) + (x.debits - x.credits)
 
-  	net = incomecr - expensedr
+  	net = decimal.Decimal(incomecr) - decimal.Decimal(expensedr)
 
   	context = {"incomecr": incomecr,"expensedr":expensedr,
 				"netincome":net,"income":self.grossincome,
@@ -246,9 +246,9 @@ class balanceSheet:
 					total = creditsTotal['credits'] - debitsTotal['debits']
 
 				elif (isCapital):
-					total = creditsTotal['credits'] - debitsTotal['debits'] + self.income.netincome()[0]
+					total = decimal.Decimal(creditsTotal['credits']) - decimal.Decimal(debitsTotal['debits']) + decimal.Decimal(self.income.netincome()[0])
 				else:
-					total = debitsTotal['debits'] - creditsTotal['credits']
+					total = decimal.Decimal(debitsTotal['debits']) - decimal.Decimal(creditsTotal['credits'])
 
 				case = {"name":x['account_id__account_name'],"number":x['account_id__account_number'],\
 						"total":total}
@@ -300,7 +300,7 @@ class balanceSheet:
 						self.drawing = x['total']
 
 
-				currentTotal = self.capital - self.drawing
+				currentTotal = decimal.Decimal(self.capital) - decimal.Decimal(self.drawing)
 			return currentTotal
 
 			

@@ -11,7 +11,7 @@ urlpatterns = [
     path('incomestatement', views.incomestatement, name='incomestatement'),
     path('receive', views.receive, name='receive'),
     path('journalize', views.journalize, name='journalize'),
-    path('sign_up/', views.sign_up, name='sign_up'),
+    # path('sign_up/', views.sign_up, name='sign_up'),
     path("insertaccount", views.insertaccount, name='insertaccount'),
     path("inserjournal", views.inserjournal, name='inserjournal'),
 ]
