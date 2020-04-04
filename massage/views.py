@@ -7,15 +7,9 @@ from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count, Case, When, IntegerField, Q, F, Value
-from django.db.models.functions import Length, Upper
 from .models import chartofaccounts, service_category, serviceInfo, journalmain, journalcollections, companyInfo
-import calendar
-from django.core import serializers
-from datetime import datetime
 import json, os, decimal,re
 from django.core.files import File
-from itertools import chain
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from .workers import Net, databaseobjects, Trialbalance, Ledgering, balanceSheet, Journalize, companysClass
 # Create your views here.
 

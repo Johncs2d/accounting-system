@@ -1,1 +1,1 @@
-[{"date":"01/06/2020","accnum":"520","accname":"Salaries expense","deb":"10000.00","cred":"0.00","des":"N/A"},{"date":"01/06/2020","accnum":"110","accname":"Cash","deb":"0.00","cred":"10000.00","des":"paid employee salary"}]
+[{"date":"01/04/2020","accnum":"110","accname":"Cash","deb":"1000000.00","cred":"0.00","des":"N/A"},{"date":"01/04/2020","accnum":"410","accname":"Service fees","deb":"0.00","cred":"1000000.00","des":"service fees"}]

@@ -142,7 +142,7 @@ function change() {
     });
 }    
     $.ajax({
-        url:"{% url 'inserjournal' %}",
+        url:"{% url 'register' %}",
         type: 'POST',
         data: {json: table1,basedate:$("#BASEDATE").val(),},
         })
