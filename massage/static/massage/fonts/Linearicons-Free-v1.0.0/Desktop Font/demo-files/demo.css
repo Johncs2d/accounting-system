@@ -149,7 +149,7 @@ p {
 .fs1 {
 	font-size: 40px;
 }
-@font-face {
+/*@font-face {
 	font-family: 'Linearicons-Free';
 	src:url('../Linearicons-Free.eot?7y0ygv');
 	src:url('../Linearicons-Free.eot?#iefix7y0ygv') format('embedded-opentype'),
@@ -159,7 +159,7 @@ p {
 		url('../Linearicons-Free.svg?7y0ygv#Linearicons-Free') format('svg');
 	font-weight: normal;
 	font-style: normal;
-}
+}*/
 
 .lnr {
 	font-family: 'Linearicons-Free';
