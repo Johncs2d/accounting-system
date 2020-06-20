@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Log In</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<!-- MATERIAL DESIGN ICONIC FONT -->
+		<link rel="stylesheet" href="{% static 'formpage/fonts/material-design-iconic-font/css/material-design-iconic-font.min.css' %}">
+		
+		<!-- STYLE CSS -->
+		<link rel="stylesheet" href="{% static 'formpage/css/style.css' %}">
+	</head>
+
+	<body>
+
+		<div class="wrapper" style="background-image: url('{% static 'formpage/images/bg-registration-form-2.jpg' %}');">
+			<div class="inner">
+				<form action="{% url 'log_in'%}" method="POST">
+					<h3>Log In</h3>
+					{% csrf_token %}
+					<div class="form-wrapper">
+						<label for="">Username</label>
+						<input type="text" name="username" required class="form-control">
+					</div>
+					<div class="form-wrapper">
+						<label for="">Password</label>
+						<input type="password" name="password" required class="form-control">
+					</div>
+					<div style="color: red; text-align: center;">
+						{{msg}}
+					</div>
+					<button>LogIn</button>
+				</form>
+			</div>
+		</div>
+		
+	</body>
+</html>

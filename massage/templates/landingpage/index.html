@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Workshop &mdash; Colorlib Website Template</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'landingpage/fonts/icomoon/style.css' %}">
+    <link rel="stylesheet" href="{% static 'landingpage/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'landingpage/css/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'landingpage/css/jquery-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'landingpage/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'landingpage/css/owl.theme.default.min.css' %}">
+    <link rel="stylesheet" href="{% static 'landingpage/css/bootstrap-datepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'landingpage/fonts/flaticon/font/flaticon.css' %}">
+    <link rel="stylesheet" href="{% static 'landingpage/css/aos.css' %}">
+
+    <link rel="stylesheet" href="{% static 'landingpage/css/style.css' %}">
+  </head>
+  <body>
+  
+  <div class="site-wrap">
+
+    <div class="site-mobile-menu">
+      <div class="site-mobile-menu-header">
+        <div class="site-mobile-menu-close mt-3">
+          <span class="icon-close2 js-menu-toggle"></span>
+        </div>
+      </div>
+      <div class="site-mobile-menu-body"></div>
+    </div>
+    
+    <header class="site-navbar py-3" role="banner">
+      <div class="container-fluid">
+        <div class="row align-items-center">
+          <div class="col-11 col-xl-2">
+            <h1 class="mb-0"><a href="index.html" class="text-white h2 mb-0">Work<span class="text-primary">shop</span> </a></h1>
+          </div>
+          <div class="col-12 col-md-10 d-none d-xl-block">
+            <nav class="site-navigation position-relative text-right" role="navigation">
+              <ul class="site-menu js-clone-nav mx-auto d-none d-lg-block">
+                <li class="active"><a href="index.html">Home</a></li>
+                <li><a href="{% url 'login' %}">Log In</a></li>
+                <li><a href="{% url 'register' %}">Register</a></li>
+              </ul>
+            </nav>
+          </div>
+          <div class="d-inline-block d-xl-none ml-md-0 mr-auto py-3" style="position: relative; top: 3px;"><a href="#" class="site-menu-toggle js-menu-toggle text-white"><span class="icon-menu h3"></span></a></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="site-section site-hero">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-10">
+            <span class="d-block mb-3 caption" data-aos="fade-up" data-aos-delay="100">Welcome to</span>
+            <h1 class="d-block mb-4" data-aos="fade-up" data-aos-delay="200">Tranquil Touch Massage</h1>
+            <span class="d-block mb-5 caption" data-aos="fade-up" data-aos-delay="300">Official Accounting Portal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{% static 'landingpage/js/jquery-3.3.1.min.js' %}"></script>
+  <script src="{% static 'landingpage/js/jquery-migrate-3.0.1.min.js' %}"></script>
+  <script src="{% static 'landingpage/js/jquery-ui.js' %}"></script>
+  <script src="{% static 'landingpage/js/popper.min.js' %}"></script>
+  <script src="{% static 'landingpage/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'landingpage/js/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'landingpage/js/jquery.stellar.min.js' %}"></script>
+  <script src="{% static 'landingpage/js/jquery.countdown.min.js' %}"></script>
+  <script src="{% static 'landingpage/js/jquery.magnific-popup.min.js' %}"></script>
+  <script src="{% static 'landingpage/js/bootstrap-datepicker.min.js' %}"></script>
+  <script src="{% static 'landingpage/js/aos.js' %}"></script>
+
+  <script src="{% static 'landingpage/js/main.js' %}"></script>
+    
+  </body>
+</html>

@@ -5,6 +5,7 @@ from django.db.models import Sum, Count, Case, When, IntegerField, Q, F, Value
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 #converter
 class converter:
 	def dateconvert(self,date):
@@ -74,7 +75,7 @@ class databaseobjects:
 
 #CLASS FOR CALCULATING NET INCOME
 class Net:
-  def __init__(self,startdate,enddate):
+  def __init__(self,startdate=None,enddate=None):
   	self.objects = databaseobjects()
   	self.gross = self.objects.gross()
   	self.expense = self.objects.expense()
@@ -83,14 +84,19 @@ class Net:
   	self.enddate = self.convert.dateconvert(enddate)
 
   def netincome(self):
-  	incomecr = 0.00
+  	grossIncome = 0.00
+
   	for x in self.gross:
-  		incomecr = decimal.Decimal(incomecr) + (x.credits - x.debits)
-  	expensedr = 0.00
+  		grossIncome = decimal.Decimal(grossIncome) + (x.credits - x.debits)
+
+  	expenses = 0.00
+
   	for x in self.expense:
-  		expensedr = decimal.Decimal(expensedr) + (x.debits - x.credits)
-  	net = incomecr - expensedr
-  	return net,incomecr,expensedr,self.gross,self.expense
+  		expenses = decimal.Decimal(expenses) + (x.debits - x.credits)
+
+  	netIncome = grossIncome - expenses
+
+  	return netIncome,grossIncome,expenses,self.gross,self.expense
 
   def incomestatement(self):
 
@@ -120,79 +126,127 @@ class Net:
 
 #CLASS FOR TRIAL BALANCE
 class Trialbalance:
+
 	def trialbalance(self,startdate,enddate):
+
 		try:
+
+			trialBalance = []
 			self.objects = databaseobjects()
-			accountsum = []
 			self.convert = converter()
 			self.startdate = self.convert.dateconvert(startdate)
 			self.enddate = self.convert.dateconvert(enddate)
-			self.Journals = journalcollections.objects.filter(transaction_date__gte=self.startdate,
-				transaction_date__lte=self.enddate).values('account_id__account_name',\
+
+			self.Journals = journalcollections.objects.filter(
+				transaction_date__gte=self.startdate,
+				transaction_date__lte=self.enddate
+				).values(
+				'account_id__account_name',
 				'account_id__account_number').distinct()
 
-			self.creditsTotal = journalcollections.objects.filter(transaction_date__gte=self.startdate,\
-				transaction_date__lte=self.enddate).aggregate(credits=Sum('credits'))
+			self.creditsTotal = journalcollections.objects.filter(
+				transaction_date__gte=self.startdate,
+				transaction_date__lte=self.enddate
+				).aggregate(credits=Sum('credits'))
 
-			self.debitsTotal = journalcollections.objects.filter(transaction_date__gte=self.startdate,\
-				transaction_date__lte=self.enddate).aggregate(debits=Sum('debits'))
+			self.debitsTotal = journalcollections.objects.filter(
+				transaction_date__gte=self.startdate,
+				transaction_date__lte=self.enddate
+				).aggregate(debits=Sum('debits'))
+
 			for x in self.Journals:
 			
-				creditstotal = journalcollections.objects.filter(account_id__account_number=x['account_id__account_number']\
-					,transaction_date__gte=self.startdate,transaction_date__lte=self.enddate).aggregate(credits=Sum('credits'))
+				creditstotal = journalcollections.objects.filter(
+					account_id__account_number=x['account_id__account_number'],
+					transaction_date__gte=self.startdate,
+					transaction_date__lte=self.enddate
+					).aggregate(credits=Sum('credits'))
 			
-				debitstotal = journalcollections.objects.filter(account_id__account_number=x['account_id__account_number']\
-					,transaction_date__gte=self.startdate,transaction_date__lte=self.enddate).aggregate(debits=Sum('debits'))
+				debitstotal = journalcollections.objects.filter(
+					account_id__account_number=x['account_id__account_number'],
+					transaction_date__gte=self.startdate,
+					transaction_date__lte=self.enddate
+					).aggregate(debits=Sum('debits'))
 			
-				case = {"name":x['account_id__account_name'],"number":x['account_id__account_number'],\
-					"credits":creditstotal['credits'],"debits":debitstotal['debits']}
-			
-				accountsum.append(case)
-			context = {"Journals":self.objects.alljournal(),"Startdate":self.startdate,
-							"Endate":self.enddate,"journals":accountsum,"debitstotal":self.debitsTotal['debits'],
-							"creditstotal":self.creditsTotal['credits'],"signs": 'True'}
+				newList = {
+					"name":x['account_id__account_name'],
+					"number":x['account_id__account_number'],
+					"credits":creditstotal['credits'],
+					"debits":debitstotal['debits']
+				}
+
+				trialBalance.append(newList)
+
+			context = {
+				"Startdate":self.startdate,
+				"Endate":self.enddate,
+				"journals":trialBalance,
+				"debitstotal":self.debitsTotal['debits'],
+				"creditstotal":self.creditsTotal['credits'],
+			}
+
 			return context
+
 		except ObjectDoesNotExist:
 			context = {"Startdate":self.startdate, "Endate":self.enddate}
 			return context
 
 #CLASS FOR LEDGERING
 class Ledgering:
+
 	def ledgering(self,startdate,enddate,accountnum):
+
 		try:
-			self.convert = converter()
-			self.startdate = self.convert.dateconvert(startdate)
-			self.enddate = self.convert.dateconvert(enddate)
-			self.accountnum = accountnum
-			self.objects = databaseobjects()
-			rowCount = journalcollections.objects.filter(transaction_date__gte=self.startdate,
-				transaction_date__lte=self.enddate,account_id__account_number=self.accountnum).count()
 
-			filteredJournal = journalcollections.objects.filter(transaction_date__gte=self.startdate,
-				transaction_date__lte=self.enddate,account_id__account_number=self.accountnum\
-				).order_by('account_id__account_number')
-
-			journaldict = []
-
+			ledgerDict = []
 			balance = 0.00
-			for x in filteredJournal:
+			balance = decimal.Decimal(balance)
+			self.accountnum = accountnum
+			self.startdate = converter().dateconvert(startdate)
+			self.enddate = converter().dateconvert(enddate)
 
-				balance = decimal.Decimal(balance) + (x.debits - x.credits)
+			rowCount = journalcollections.objects.filter(
+				transaction_date__gte=self.startdate,
+				transaction_date__lte=self.enddate,
+				account_id__account_number=self.accountnum
+				).count()
 
-				case = {'transaction_date':x.transaction_date,'account_type': x.account_id.account_type, 
-						'account_name': x.account_id.account_name, 'account_detailtype':x.account_id.account_detailtype,
-						'account_number':x.account_id.account_number,'debits':x.debits,
-						'credits':x.credits,'balance':balance}
+			ledgerReports = journalcollections.objects.filter(
+				transaction_date__gte=self.startdate,
+				transaction_date__lte=self.enddate,
+				account_id__account_number=self.accountnum
+				).order_by('account_id__account_number')
+			
+			for x in ledgerReports:
 
-				journaldict.append(case)
+				balance = balance + (x.debits - x.credits)
 
-			context = {"journals": journaldict,"Journals": self.objects.alljournal(),
-							"rowCount":rowCount,"chart": self.objects.chartofaccs(),
-							'startdate':self.startdate,"endate":self.enddate}
+				newList = {
+
+					'transaction_date':x.transaction_date,
+					'account_type': x.account_id.account_type, 
+					'account_name': x.account_id.account_name, 
+					'account_detailtype':x.account_id.account_detailtype,
+					'account_number':x.account_id.account_number,
+					'debits':x.debits,
+					'credits':x.credits,
+					'balance':balance
+				}
+
+				ledgerDict.append(newList)
+
+			context = {
+				"journals": ledgerDict,
+				"rowCount":rowCount,
+				"chart": databaseobjects().chartofaccs(),
+				'startdate':self.startdate,
+				"endate":self.enddate
+			}
 
 			return context
 
 		except ObjectDoesNotExist:
+
 			context = {"Startdate":self.startdate, "Endate":self.enddate}
 			return context
 
@@ -201,36 +255,48 @@ class balanceSheet:
 
 	def balancing(self,startdate,enddate,acctype):
 		try:
-			self.convert = converter()
-			self.startdate = self.convert.dateconvert(startdate)
-			self.enddate = self.convert.dateconvert(enddate)
+
+
+			self.startdate = converter().dateconvert(startdate)
+			self.enddate = converter().dateconvert(enddate)
 			self.acctype = acctype
 			self.income = Net(startdate,enddate)
 			assets = []
 
-			currAsset = journalcollections.objects.filter(transaction_date__gte=self.startdate,transaction_date__lte=\
-				self.enddate,account_id__account_type=self.acctype).values('account_id__account_name',\
-				'account_id__account_number').distinct()
+			currAsset = journalcollections.objects.filter(
+				transaction_date__gte=self.startdate,
+				transaction_date__lte=self.enddate,
+				account_id__account_type=self.acctype
+				).values('account_id__account_name',
+				'account_id__account_number'
+				).distinct()
 
 			for x in currAsset:
 
-				creditsTotal = journalcollections.objects.filter(account_id__account_number=x[\
-					'account_id__account_number'],transaction_date__gte=self.startdate,transaction_date__lte=\
-					self.enddate).aggregate(credits=Sum('credits'))
+				creditsTotal = journalcollections.objects.filter(
+					account_id__account_number=x['account_id__account_number'],
+					transaction_date__gte=self.startdate,
+					transaction_date__lte=self.enddate
+					).aggregate(credits=Sum('credits'))
 
-				debitsTotal = journalcollections.objects.filter(account_id__account_number=x[\
-					'account_id__account_number'],transaction_date__gte=self.startdate,transaction_date__lte=\
-					self.enddate).aggregate(debits=Sum('debits'))
+				debitsTotal = journalcollections.objects.filter(
+					account_id__account_number=x['account_id__account_number'],
+					transaction_date__gte=self.startdate,
+					transaction_date__lte=self.enddate
+					).aggregate(debits=Sum('debits'))
 
 				accountName = x['account_id__account_name']
 
 				isDepreciation = re.findall("depreciation", accountName.lower())
+
 				isCapital = re.findall("capital", accountName.lower())
+
 				if (isDepreciation):
 					total = creditsTotal['credits'] - debitsTotal['debits']
 
 				elif (isCapital):
 					total = creditsTotal['credits'] - debitsTotal['debits'] + self.income.netincome()[0]
+
 				else:
 					total = debitsTotal['debits'] - creditsTotal['credits']
 
@@ -238,24 +304,29 @@ class balanceSheet:
 						"total":total}
 
 				assets.append(case)
+				
 			return assets
 		except ObjectDoesNotExist as e:
 			raise e
 
 	def totals(self,startdate,enddate,acctype):
 		try:
-			self.convert = converter()
-			self.startdate = self.convert.dateconvert(startdate)
-			self.enddate = self.convert.dateconvert(enddate)
+			self.startdate = converter().dateconvert(startdate)
+			self.enddate = converter().dateconvert(enddate)
 			self.acctype = acctype
 			self.income = Net(startdate,enddate)
 			self.objects = databaseobjects()
 			self.capital = 0.00
 			self.drawing = 0.00
-			currAsset = journalcollections.objects.filter(transaction_date__gte=self.startdate,transaction_date__lte=\
-				self.enddate,account_id__account_type=self.acctype).order_by('account_id__account_number')
 			currentTotal = 0.00
-		
+
+			currAsset = journalcollections.objects.filter(
+				transaction_date__gte=self.startdate,
+				transaction_date__lte=self.enddate,
+				account_id__account_type=self.acctype
+				).order_by('account_id__account_number')
+
+			
 			if self.acctype == "Current assets" or self.acctype == "Non-current assets":
 
 				for x in currAsset:
@@ -266,6 +337,7 @@ class balanceSheet:
 				for x in currAsset:
 
 					currentTotal = decimal.Decimal(currentTotal) + (x.credits - x.debits)
+
 			else:
 
 				equity = self.balancing(startdate,enddate,self.acctype)
@@ -283,25 +355,23 @@ class balanceSheet:
 					elif isDrawing:
 						self.drawing = x['total']
 
-
 				currentTotal = self.capital - self.drawing
+
 			return currentTotal
 
-			
 		except ObjectDoesNotExist:
 			raise e
 
 class Journalize:
-	#FUNCTION FOR CREATING JOURNAL RECORDS
 
+	#FUNCTION FOR CREATING JOURNAL RECORDS
 	def journalInsert(self,data,date):
 		try:
 			#GET THE JSON FILE OR CREATE A NEW ONE
 			path = os.path.join(BASE_DIR, 'journal.json')
 
 			#CALL FUNCTION TO CONVERT DATES
-			self.convert = converter()
-			self.startdate = self.convert.dateconvert(date)
+			self.startdate = converter().dateconvert(date)
 			self.data = data
 
 			#OPEN THE JSON FILE AND WRITE ITS CONTENT
@@ -322,10 +392,17 @@ class Journalize:
 			for x in self.data:
 
 				#GET THE SUM ACCOUNTS IN THE CHART OF ACCOUNTS
-				accountCr = chartofaccounts.objects.filter(account_number=int(x['accnum'])\
-					).aggregate(totalcreds=Sum('account_credbalance'))
-				accountDr = chartofaccounts.objects.filter(account_number=int(x['accnum'])\
-					).aggregate(totaldebs=Sum('account_debbalance'))
+				accountCr = chartofaccounts.objects.filter(
+					account_number=int(x['accnum'])
+					).aggregate(
+					totalcreds=Sum('account_credbalance')
+					)
+
+				accountDr = chartofaccounts.objects.filter(
+					account_number=int(x['accnum'])
+					).aggregate(
+					totaldebs=Sum('account_debbalance')
+					)
 
 				transactionDate = self.convert.dateconvert(x['date'])
 
@@ -334,14 +411,17 @@ class Journalize:
 				#UPDATE CHART OF ACCOUNTS
 				chartofaccounts.objects.filter(account_number=int(x['accnum'])).update(
 				account_debbalance=decimal.Decimal(accountDr['totaldebs'])+decimal.Decimal(x['deb']))
+
 				chartofaccounts.objects.filter(account_number=int(x['accnum'])).update(
 				account_credbalance=decimal.Decimal(accountCr['totalcreds'])+decimal.Decimal(x['cred']))
 
 				#INSERT JOURNAL
 				journalize = journalcollections(transaction_date=transactionDate,account_id=accounts,debits=float(x['deb']),
 					credits=float(x['cred']),description=x['des'],journalid=create)
+
 				#SAVE THE JOURNAL
 				journalize.save()
+				
 			return "Success"
 		except Exception as e:
 			print('exception occured')

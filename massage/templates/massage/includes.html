@@ -152,132 +152,7 @@
             <div class="app-header__content">
                 <div class="app-header-left">
                     {% block megamenu %}
-                    <ul class="header-megamenu nav">
-    <li class="nav-item">
-        <a href="javascript:void(0);" data-placement="bottom" rel="popover-focus" data-offset="300" data-toggle="popover-custom" class="nav-link">
-            <i class="nav-link-icon pe-7s-gift"> </i>
-            Transactions
-            <i class="fa fa-angle-down ml-2 opacity-5"></i>
-        </a>
-        <div class="rm-max-width">
-            <div class="d-none popover-custom-content">
-                <div class="dropdown-mega-menu">
-                    <div class="grid-menu grid-menu-3col">
-                        <div class="no-gutters row">
-                            <div class="col-sm-6 col-xl-4">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item-header nav-item">
-                                        Customer
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{% url 'receive' %}" class="nav-link">
-                                            
-                                            <span>
-                                                Receive Payment
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link disabled">
-                                            
-                                            <span>
-                                                Estimate
-                                            </span>
-                                        </a>
-                                    </li>
-
-                                     <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link disabled">
-                                            
-                                            <span>
-                                                Credit Note
-                                            </span>
-                                        </a>
-                                    </li>
-
-                                     <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link disabled">
-                                                                                        <span>
-                                                Sales Receipt
-                                            </span>
-                                        </a>
-                                    </li>
-
-                                     <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link disabled">
-                                           
-                                            <span>
-                                                Refund Receipt
-                                            </span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-sm-6 col-xl-4">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item-header nav-item">
-                                        Suppliers
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link">
-                                           Expense
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link disabled">
-                                            Cheque
-                                          
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link">Bills</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link">Pay Bills</a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link">Purchase Order</a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link disabled">Supplier Credit</a>
-                                    </li>
-
-
-                                </ul>
-                            </div>
-                            <div class="col-sm-6 col-xl-4">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item-header nav-item">Others
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link">Bank Deposit
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link disabled">Transfer
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link">Withdraw
-                                    
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{% url 'journalize' %}" class="nav-link">Journal Entry
-                                        </a>
-                                    </li>
-
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </li>
-</ul>
+                 
                     {% endblock %}
                 </div>
                 <div class="app-header-right">
@@ -291,21 +166,13 @@
                                             <i class="fa fa-angle-down ml-2 opacity-8"></i>
                                         </a>
                                         <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
-                                            <button type="button" tabindex="0" class="dropdown-item">User Account</button>
-                                            <button type="button" tabindex="0" class="dropdown-item">Settings</button>
-                                            <h6 tabindex="-1" class="dropdown-header">Header</h6>
-                                            <button type="button" tabindex="0" class="dropdown-item">Actions</button>
-                                            <div tabindex="-1" class="dropdown-divider"></div>
-                                            <button type="button" tabindex="0" class="dropdown-item">Dividers</button>
+                                          <a href="{% url 'logout' %}" class="dropdown-item">Logout</a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="widget-content-left  ml-3 header-user-info">
                                     <div class="widget-heading">
-                                        {USERNAME}
-                                    </div>
-                                    <div class="widget-subheading">
-                                        {POSITION}
+                                        {{request.user.get_full_name}}
                                     </div>
                                 </div>
                             </div>
@@ -499,6 +366,33 @@
                                 </a>
                             </li>
 
+                            {% endif %}
+                            {% if request.get_full_path == "/journalize" %}
+                            <li class="mm-active">
+                                <a href="{% url 'journalize' %}">
+                                    <i class=""></i>Journal Entry
+                                        </a>
+                            </li>
+                            {% else %}
+                            <li>
+                                <a href="{% url 'journalize' %}">
+                                    <i class=""></i>Journal Entry
+                                        </a>
+                            </li>
+                            {% endif %}
+
+                            {% if request.get_full_path == "/journal_list" %}
+                            <li class="mm-active">
+                                <a href="{% url 'journal_list' %}">
+                                    <i class=""></i>Journals
+                                        </a>
+                            </li>
+                            {% else %}
+                            <li>
+                                <a href="{% url 'journal_list' %}">
+                                    <i class=""></i>Journals
+                                        </a>
+                            </li>
                             {% endif %}
                             <li class="app-sidebar__heading">Charts</li>
                             <li>

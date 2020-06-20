@@ -74,15 +74,7 @@ The Companys Ledger
 
             <h3>Tranquil Touch Massage</h3>
             <p><strong>General Ledger</strong></p>
-            {% if Startdate is None %}
-            {% for x in journals1 %}
-            {% if forloop.first %}
-            <p>Journal # {{x.journalid.id}} Date: {{x.journalid.monthof}}</p>
-            {%endif%}
-            {% endfor %}
-            {% else %}
-            <p>As of {{Startdate}} to {{Endate}}</p>
-            {% endif %}
+            <p>As of {{startdate}} to {{endate}}</p>
             <hr>
         </div>
 
