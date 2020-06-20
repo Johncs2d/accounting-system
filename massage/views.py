@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .workers import Net, databaseobjects, Trialbalance, Ledgering, balanceSheet, Journalize
 # Create your views here.
 
-
+@csrf_exempt
 def index(request):
 	if request.user.is_authenticated:
 		p1 = Net()
@@ -25,28 +25,28 @@ def index(request):
 
 	else:
 		return render(request, "landingpage/index.html")
-
+@csrf_exempt
 def signupform(request):
 	if request.user.is_authenticated:
 		return HttpResponseRedirect(reverse("index"))
 	else:
 		return render(request, "formpage/index.html")
-
+@csrf_exempt
 def loginForm(request):
 	if request.user.is_authenticated:
 		return HttpResponseRedirect(reverse("index"))
 	else:
 		return render(request, "formpage/login.html")
-
+@csrf_exempt
 def info(request):
 	return render(request,"massage/info.html")
-
+@csrf_exempt
 def charts(request):
 
 	context = {"chart": chartofaccounts.objects.all()}
 	return render(request, "massage/chartsofaccounts.html",context)
 
-#INSERT ACCOUNTS
+@csrf_exempt#INSERT ACCOUNTS
 def insertaccount(request):
 
 	accountnumber = strip_tags(request.POST["number"])
@@ -77,7 +77,7 @@ def insertaccount(request):
 		return HttpResponse("Account Already Exist",status=403)
 
 
-
+@csrf_exempt
 def trialbalance(request):
 	objects = databaseobjects()
 	context = {"Journals": objects.alljournal()}
@@ -97,7 +97,7 @@ def trialbalance(request):
 			return render(request,"massage/trialbalance.html",context)
 	else:
 		return HttpResponseRedirect(reverse("index"))
-
+@csrf_exempt
 def ledger(request):
 
 	if request.user.is_authenticated:
@@ -121,7 +121,7 @@ def ledger(request):
 	else:
 		return HttpResponseRedirect(reverse("index"))
 
-
+@csrf_exempt
 def balancesheet(request):
 
 	if request.user.is_authenticated:
@@ -164,7 +164,7 @@ def balancesheet(request):
 	else:
 		return HttpResponseRedirect(reverse("index"))
 
-
+@csrf_exempt
 def incomestatement(request):
 
 	if request.user.is_authenticated:
@@ -185,7 +185,7 @@ def incomestatement(request):
 	else:
 		return HttpResponseRedirect(reverse("index"))
 
-#JOURNALIZE
+@csrf_exempt#JOURNALIZE
 def journalize(request):
 	try:
 		maxid = journalmain.objects.all().order_by("-id")[0]
@@ -198,7 +198,7 @@ def journalize(request):
 	return render(request,"massage/journal.html",context)
 
 
-#INSERT JOURNAL
+@csrf_exempt#INSERT JOURNAL
 def inserjournal(request):
 
 	data1 = request.POST["json"]
@@ -208,7 +208,7 @@ def inserjournal(request):
 	return JsonResponse(context)
 
 
-	#SIGNUP
+@csrf_exempt	#SIGNUP
 def sign_up(request):
 
 		if request.method == "POST":
@@ -229,7 +229,7 @@ def sign_up(request):
 				pass
 		else:
 			return HttpResponseRedirect(reverse("signupform"))
-
+@csrf_exempt
 def log_me_in(request):
 
 	if request.method == "POST":
@@ -245,7 +245,7 @@ def log_me_in(request):
 
 	else:
 		return HttpResponseRedirect(reverse("login"))
-
+@csrf_exempt
 def logusout(request):
 	if request.user.is_authenticated:
 		logout(request)
@@ -253,7 +253,7 @@ def logusout(request):
 	else:
 		return HttpResponseRedirect(reverse("login"))
 
-
+@csrf_exempt
 def journalList(request):
 
 	if request.user.is_authenticated:
