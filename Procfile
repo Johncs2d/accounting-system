@@ -1,1 +1,1 @@
-web: gunicorn dnscOBS.wsgi --log-file -
+web: gunicorn tranquil.wsgi --log-file -
