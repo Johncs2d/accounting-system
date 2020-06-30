@@ -94,7 +94,7 @@ class Net:
   	for x in self.expense:
   		expenses = decimal.Decimal(expenses) + (x.debits - x.credits)
 
-  	netIncome = grossIncome - expenses
+  	netIncome = decimal.Decimal(grossIncome) - decimal.Decimal(expenses)
 
   	return netIncome,grossIncome,expenses,self.gross,self.expense
 
@@ -139,7 +139,7 @@ class Net:
   	for x in self.totalexpense:
   		expensedr = decimal.Decimal(expensedr) + (x.debits - x.credits)
 
-  	net = incomecr - expensedr
+  	net = decimal.Decimal(incomecr) - decimal.Decimal(expensedr)
 
   	context = {"incomecr": incomecr,"expensedr":expensedr,
 				"netincome":net,"income":self.grossincome,
