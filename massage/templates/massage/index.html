@@ -60,37 +60,36 @@ $(function () {
   classificationData[0] = {
     name: 'Gross Income',
     y: earnings_total,
-    color: '#0094b3', // popay blue
+    color: '#0094b3', 
     nrElements: popay_data.Income.length
   };
   
   classificationData[1] = {
     name: 'Expenses',
     y: deductions_total,
-    color: '#ED561B', // red alike
+    color: '#ED561B', 
     nrElements: popay_data.Expenses.length
   };
     
   classificationData[2] = {
     name: 'Net Income',
     y: earnings_total - deductions_total,
-    color: '#50B432', // green alike
+    color: '#50B432', 
     nrElements: 1
   };
   
-  // Add the color to the 2nd level array, a brightness variation for each base color (per classification)
+
   for (var i = 0, e = 0; i < 3; i += 1) {
     var elementsOfClass = classificationData[i].nrElements;
     
     for (var j = 0; j < elementsOfClass; j += 1) {
-      // create n brightness adjustements, within the 25 pct range.
       var brightness = ( 1 - ( (elementsOfClass - j) / elementsOfClass)) / 4;
       elementData[e].color = Highcharts.Color(classificationData[i].color).brighten(brightness).get();
       e = e + 1;
     }
   };
 
-  // Create the chart
+ 
   $('#mychart').highcharts({
       chart: { type: 'pie'},
       credits: {
@@ -101,21 +100,21 @@ $(function () {
       plotOptions: { 
         pie: { 
           center: ['50%', '50%'],
-          startAngle: -90 // showing data starts at -90 degrees for both series
+          startAngle: -90 
       }},
       series: [{
-        name: 'Total', // shown in the tooltip
+        name: 'Total', 
         data: classificationData,
-        size: '60%', // inner donut
+        size: '60%', 
         dataLabels: {
             color: 'white',
             style: { "textShadow": "0 0 0 contrast, 0 0 0 contrast" },
             distance: -50
       } }, {
-        name: popay_data.currency, // shown in the tooltip
+        name: popay_data.currency, 
         data: elementData,
         size: '100%',
-        innerSize: '65%' // a little more then the 60% of the first serie
+        innerSize: '65%' 
       }]
   });
 });
@@ -132,7 +131,7 @@ $(function () {
                     <div class="widget-subheading">Total Income</div>
                 </div>
                 <div class="widget-content-right">
-                    <div class="widget-numbers text-white"><span>${{income}}</span></div>
+                    <div class="widget-numbers text-white"><span>PHP{{income}}</span></div>
                 </div>
             </div>
         </div>

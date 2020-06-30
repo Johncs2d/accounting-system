@@ -38,19 +38,22 @@ else {
  });
 
 
-function removerow(id){$("#tr"+id).hide('slow',"linear",remove(id));}
-
-function remove(id){$('#tr'+id).remove();ROWID--;
-
-if (ROWID==1) {
-
-$("#submit-table").hide();
-
+function removerow(id){
+    $("#tr"+id).hide('slow',"linear",remove(id));
 }
-else {
 
-    $("#submit-table").show();
-}
+function remove(id){
+    $('#tr'+id).remove();ROWID--;
+
+    if (ROWID==1) {
+
+        $("#submit-table").hide();
+
+    }
+    else {
+
+        $("#submit-table").show();
+    }
 
 }
 

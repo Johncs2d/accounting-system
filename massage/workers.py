@@ -353,7 +353,7 @@ class balanceSheet:
 						self.capital = decimal.Decimal(x['total']) 
 
 					elif isDrawing:
-						self.drawing = x['total']
+						self.drawing = decimal.Decimal(x['total'])
 
 				currentTotal = self.capital - self.drawing
 
