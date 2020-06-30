@@ -391,6 +391,7 @@ class Journalize:
 		try:
 			#GET THE JSON FILE OR CREATE A NEW ONE
 			path = os.path.join(BASE_DIR, 'journal.json')
+			self.convert = converter()
 
 			#CALL FUNCTION TO CONVERT DATES
 			self.startdate = converter().dateconvert(date)
