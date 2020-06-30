@@ -116,7 +116,7 @@ class Net:
   	for x in grossincome:
   		grossIncome = decimal.Decimal(grossIncome) + (x.credits - x.debits)
 
-  	netIncome = grossIncome - expenses
+  	netIncome = grossIncome - decimal.Decimal(expenses)
 
   	return netIncome
 
