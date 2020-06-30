@@ -98,6 +98,28 @@ class Net:
 
   	return netIncome,grossIncome,expenses,self.gross,self.expense
 
+  def datedincome(self):
+  	totalexpense = journalcollections.objects.filter(transaction_date__gte=self.startdate,\
+  		transaction_date__lte=self.enddate,account_id__account_type="Expenses").order_by(\
+  		'account_id__account_number')
+
+  	grossincome = journalcollections.objects.filter(transaction_date__gte=self.startdate,\
+  		transaction_date__lte=self.enddate,account_id__account_type="Income").order_by(\
+  		'account_id__account_number')
+
+  	grossIncome = 0.00
+  	expenses = 0.00
+
+  	for x in totalexpense:
+  		expenses = decimal.Decimal(expenses) + (x.debits - x.credits)
+
+  	for x in grossincome:
+  		grossIncome = decimal.Decimal(grossIncome) + (x.credits - x.debits)
+
+  	netIncome = grossIncome - expenses
+
+  	return netIncome
+
   def incomestatement(self):
 
   	self.totalexpense = journalcollections.objects.filter(transaction_date__gte=self.startdate,\
@@ -295,8 +317,8 @@ class balanceSheet:
 					total = creditsTotal['credits'] - debitsTotal['debits']
 
 				elif (isCapital):
-					total = creditsTotal['credits'] - debitsTotal['debits'] + self.income.netincome()[0]
-
+					total = creditsTotal['credits'] - debitsTotal['debits'] + decimal.Decimal(self.income.datedincome())
+					print(self.income.datedincome())
 				else:
 					total = debitsTotal['debits'] - creditsTotal['credits']
 
@@ -355,7 +377,7 @@ class balanceSheet:
 					elif isDrawing:
 						self.drawing = decimal.Decimal(x['total'])
 
-				currentTotal = self.capital - self.drawing
+				currentTotal = decimal.Decimal(self.capital) - decimal.Decimal(self.drawing)
 
 			return currentTotal
 
