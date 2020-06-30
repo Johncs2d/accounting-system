@@ -39,7 +39,10 @@ def loginForm(request):
 		return render(request, "formpage/login.html")
 @csrf_exempt
 def info(request):
-	return render(request,"massage/info.html")
+	if request.user.is_authenticated:
+		context = {"company":companyInfo.objects.all()}
+	return render(request,"massage/info.html",context)
+
 @csrf_exempt
 def charts(request):
 
@@ -226,7 +229,7 @@ def sign_up(request):
 				login(request, user)
 				return HttpResponseRedirect(reverse("index"))
 			except IntegrityError:
-				pass
+				return render(request,"formpage/index.html",{"msg":"User Already Exist"})
 		else:
 			return HttpResponseRedirect(reverse("signupform"))
 @csrf_exempt
