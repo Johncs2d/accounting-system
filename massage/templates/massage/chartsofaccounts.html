@@ -73,10 +73,20 @@ function addaccount() {
         preConfirm: () => {
 
 
-            if (document.getElementById('accnum').value && document.getElementById('accname').value &&
-                document.getElementById('type').value && document.getElementById('detailed').value) {
+            if (document.getElementById('accnum').value && 
+                document.getElementById('accname').value &&
+                document.getElementById('type').value && 
+                document.getElementById('detailed').value) {
 
-                if($("#accnum").val() < 200 && $("#accnum").val() > 1 && ($("#type").val() != 'Current assets' || $("#type").val() !== 'Fixed assets' || $("#type").val() != 'Non-current assets')){
+                if(
+                    !$("#accnum").val() < 200 && 
+                    !$("#accnum").val() > 1 && 
+                    (
+                        $("#type").val() != 'Current assets' || 
+                        $("#type").val() != 'Fixed assets' || 
+                        $("#type").val() != 'Non-current assets')
+                    )
+                {
 
                      Swal.showValidationMessage('Invalid Account Number or Type');
                      console.log("1")
