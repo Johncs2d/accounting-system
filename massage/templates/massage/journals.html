@@ -1,12 +1,12 @@
 {% extends "massage/includes.html" %}
 {% block title %}
-LEDGER
+Journal List
 {% endblock %}
 {% block pagetitle %}
 Tranquil Touch Massage
 {% endblock %}
 {% block pagetitlesubheading %}
-The Companys Ledger
+The list of entries
 {% endblock %}
 {% block reportsbtn %}
 {% endblock %}
@@ -18,7 +18,7 @@ The Companys Ledger
         <div class="row">
             <div class="col-md-12 col-lg-12 col-sm-12">
                 <h4 class="text-center">SELECT JOURNAL TO REPORT</h4>
-                <form class="needs-validation" novalidate method="POST" action="{% url 'ledger' %}">
+                <form class="needs-validation" novalidate method="POST" action="{% url 'journal_list' %}">
                     {% csrf_token %}
                     <div class="input-group mb-3">
                         <div class="input-group mb-3">
@@ -39,20 +39,6 @@ The Companys Ledger
                                 Please Input End Date!
                             </div>
                         </div>
-                        <div class="valid-feedback">
-                            Looks good!
-                        </div>
-                        <div class="invalid-feedback">
-                            Invalid Input!
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <select name="account" id="" required class="custom-select">
-                            <option value="">SELECT ACCOUNT</option>
-                            {% for x in chart %}
-                            <option value="{{x.account_number}}">{{x.account_number}} {{x.account_name}}</option>
-                            {% endfor %}
-                        </select>
                         <div class="valid-feedback">
                             Looks good!
                         </div>

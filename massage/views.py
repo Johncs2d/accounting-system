@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from .models import chartofaccounts, service_category, serviceInfo, companyInfo, journalmain, journalcollections, employees, logs
 import  decimal
 from django.views.decorators.csrf import csrf_exempt
-from .workers import Net, databaseobjects, Trialbalance, Ledgering, balanceSheet, Journalize
+from .workers import Net, databaseobjects, Trialbalance, Ledgering, balanceSheet, Journalize, converter
 import json
 # Create your views here.
 
@@ -261,17 +261,25 @@ def logusout(request):
 def journalList(request):
 
 	if request.user.is_authenticated:
-		context = {"journ": journalcollections.objects.all(),"accounts":chartofaccounts.objects.all()}
-
 		if request.method == "POST":
+			convert = converter()
 			startdate = request.POST.get("startdate",False)
 
 			enddate = request.POST.get("enddate",False)
-	
+			startdate = convert.dateconvert(startdate)
+			enddate = convert.dateconvert(enddate)
+			
+			context = {
+				"journ": journalcollections.objects.filter(
+						transaction_date__gte=startdate,
+						transaction_date__lte=enddate),
+				"accounts":chartofaccounts.objects.all(),
+				"startdate":startdate,"endate":enddate}
+
 			return render(request,"massage/journals.html",context)
 		else:
 			
-			return render(request,"massage/journals.html",context)
+			return render(request,"massage/journals.html")
 	else:
 		return HttpResponseRedirect(reverse("index"))
 @csrf_exempt

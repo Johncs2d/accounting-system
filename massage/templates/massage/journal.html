@@ -13,6 +13,13 @@ Journal Entry
 {% endblock %}
 {% block scripts %}
 <script>
+
+var debitall = 0;
+var creditall = 0;
+ window.onbeforeunload = function() {
+        return "Dude, are you sure you want to leave? Think of the kittens!";
+    }
+
 var ROWID =1;
 'use strict';
 $(document).ready(function() {
@@ -39,8 +46,11 @@ else {
 
 
 function removerow(id){
+
     $("#tr"+id).hide('slow',"linear",remove(id));
 }
+
+
 
 function remove(id){
     $('#tr'+id).remove();ROWID--;
@@ -54,6 +64,14 @@ function remove(id){
 
         $("#submit-table").show();
     }
+
+
+    $("#date").val('');  
+    $("#desc").val(''); 
+    $("#credits").val('');
+    $("#account").val('');
+    $("#debits").val('');
+     
 
 }
 
@@ -83,14 +101,17 @@ function remove(id){
         var desc =   $("#desc").val();
         var acID  = parseFloat(acName);
         var acName1 = acName.substring(3)
+
+        debitall = parseFloat(debitall) + parseFloat(debits);
+        creditall = parseFloat(creditall) + parseFloat(credits);
                  
         $('#journaltable > tbody:last-child').append(
             `<tr role="row" class="odd" id="tr${ROWID}">
                 <td  id="date${ROWID}">${date}</td>
                 <td  id="acID${ROWID}">${acID}</td>
                 <td  id="acName${ROWID}">${acName1}</td>
-                <td  id="debit${ROWID}" data-override="${debits}">$${debits}</td>
-                <td  id="credit${ROWID}" data-override="${credits}">$${credits}</td>
+                <td  id="debit${ROWID}" data-override="${debits}">PHP${debits}</td>
+                <td  id="credit${ROWID}" data-override="${credits}">PHP${credits}</td>
                 <td  id="desc${ROWID}">${desc}</td>
                 <td  id="delete${ROWID}">
                 <button class="btn btn-danger" onclick="removerow(${ROWID})">DELETE</button>
@@ -98,11 +119,39 @@ function remove(id){
                 
             </tr>`);
 
+        if (ROWID % 2 == 1) {
+        $("#date").attr("disabled", "disabled");
+        $("#desc").attr("disabled", "disabled");
         $("#account").val('');
-        $("#debits").val('');
-        $("#credits").val('');
-        $("#desc").val('');
-        $("#date").val('');
+        if (credits != 0.00) {
+
+        console.log("Credits: " +credits);
+        $("#debits").val(credits);
+        $("#credits").val(0);
+
+        }
+
+
+        else{
+        $("#credits").val(debits);
+        $("#debits").val(0);
+
+        }
+
+        $("#desc").val(desc);
+        $("#date").val(date);
+        }
+
+        else{
+         $("#date").removeAttr("disabled");
+         $("#desc").removeAttr("disabled");
+         $("#date").val('');  
+         $("#desc").val(''); 
+         $("#credits").val('');
+         $("#account").val('');
+         $("#debits").val('');
+        }
+     
 
         form.classList.remove("was-validated");
         ROWID++;
@@ -125,6 +174,12 @@ $('#submit-table').click( function() {
     if (!$("#BASEDATE").val()) {
 alert("PLEASE INPUT JOURNAL DATE");
     }
+
+else if(debitall != creditall){
+alert("Error Processing your entries. Debits and Credits are not balanced.");
+alert("Debits Total is : " + debitall + " Credits total is: " + creditall);
+alert("Amount Difference is: " + Math.abs(debitall - creditall));
+}
     else{
     // Convert the table into a javascript object
     var table = $('#journaltable').tableToJSON({ignoreColumns: [6]}); 
@@ -143,7 +198,9 @@ function change() {
         if(counter >= text.length) { counter = 0; }
         elem.fadeIn();
     });
-}    
+}
+
+
     $.ajax({
         url:"{% url 'inserjournal' %}",
         type: 'POST',
@@ -208,12 +265,12 @@ function change() {
                 </div>
                 <div class="col-md-2 mb-3">
                     <label for="validationCustom02">Debits</label>
-                    <input id="debits" class="form-control input-mask-trigger" data-inputmask="'alias': 'numeric', 'autoGroup': true, 'digits': 2, 'digitsOptional': false, 'placeholder': '0'" required style="text-align: right;">
+                    <input id="debits" value="0.00" class="form-control input-mask-trigger" data-inputmask="'alias': 'numeric', 'autoGroup': true, 'digits': 2, 'digitsOptional': false, 'placeholder': '0'" required style="text-align: right;">
                 </div>
                 <div class="col-md-2 mb-3">
                     <label for="validationCustomUsername">Credits</label>
                     <div class="input-group">
-                        <input id="credits" class="form-control input-mask-trigger" data-inputmask="'alias': 'numeric', 'autoGroup': true, 'digits': 2, 'digitsOptional': false, 'placeholder': '0'" required  style="text-align: right;">
+                        <input id="credits" value="0.00" class="form-control input-mask-trigger" data-inputmask="'alias': 'numeric', 'autoGroup': true, 'digits': 2, 'digitsOptional': false, 'placeholder': '0'" required  style="text-align: right;">
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
@@ -222,6 +279,7 @@ function change() {
                 </div>
             </div>
             <button class="btn btn-primary" type="submit">Insert</button>
+              <button class="btn btn-danger" type="button" onclick="reset()">Reset</button>
         </form>
     </div>
 </div>
